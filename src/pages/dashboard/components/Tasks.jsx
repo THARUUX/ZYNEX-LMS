@@ -106,7 +106,7 @@ export default function Tasks({id}) {
                     Add
                 </button>
             </div>
-            <div className="mt-4 max-h-96 overflow-y-scroll">
+            <div className="mt-4">
                 <table className="w-full min-w-full divide-y divide-gray-200 ">
                     <thead>
                         <tr>

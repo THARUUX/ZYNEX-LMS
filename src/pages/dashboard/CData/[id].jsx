@@ -39,7 +39,7 @@ export default function Class() {
                 <div className="w-full tracking-wider sm:px-5 py-3 text-lg sm:text-3xl text-slate-900 flex justify-between">
                     <div>Class: {classType ? classType.name : 'Not Found'}</div>
                 </div>
-                <div className='p-5 flex flex-col sm:max-w-1/3'>
+                <div className='p-5 flex flex-col sm:max-w-1/3 max-h-[100vh] sm:max-h-[50vh]'>
                     <Tasks id={id}/>
                 </div>
             </div>

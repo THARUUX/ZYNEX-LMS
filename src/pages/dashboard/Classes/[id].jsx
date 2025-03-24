@@ -15,6 +15,7 @@ export default function Class() {
     const [attendance, setAttendance] = useState({}); // Store attendance state
     const [present, setPresent] = useState(0);
     const [absent, setAbsent] = useState(0);
+    const [todoInput , setTodoInput] = useState('');
 
     useEffect(() => {
         const presentCount = Object.values(attendance).filter(value => value).length;
@@ -147,7 +148,7 @@ export default function Class() {
                     <div>{classData.date.split('T')[0]}</div>
                 </div>
                 <div className="w-full flex flex-col sm:flex-row py-5 gap-10">
-                    <div className='sm:w-2/5 shadow-lg rounded py-5 px-2'>
+                    <div className='sm:w-2/5 shadow-lg rounded py-5 px-2 max-h-[100vh] sm:max-h-[50vh]'>
                         <div className='w-full text-center uppercase'>Student Attendance</div>
                         <table className="w-full divide-y divide-gray-200">
                             <thead>
@@ -193,15 +194,28 @@ export default function Class() {
                             Save Attendance
                         </button>
                     </div>
-                    <div className='sm:w-2/5 py-10 shadow-lg rounded'>
+                    <div className='sm:w-2/5 py-10 shadow-lg rounded max-h-[100vh] sm:max-h-[50vh]'>
                         <div className='w-full text-center uppercase'>Student Attendance Report</div>
 
                         <PieChartComponent data={attendanceData} />
                     </div>
                 </div>
-                <div className="w-full flex flex-row sm:flex-col">
-                    <div className='w-full sm:w-2/5 shadow-lg rounded'>
-                    <Tasks id={classData.id} />
+                <div className="w-full flex flex-col sm:flex-row gap-10">
+                    <div className='w-full sm:w-2/5 shadow-lg rounded max-h-[100vh] sm:max-h-[50vh] overflow-y-scroll'>
+                        <Tasks id={classData.id} />
+                    </div>
+                    <div className='w-full sm:w-2/5 shadow-lg rounded p-5 max-h-[100vh] sm:max-h-[50vh] flex flex-col gap-5'>
+                        <div>To Do List</div>
+                        <div className='flex w-full gap-2'>
+                            <input                     
+                                type="text"
+                                value={todoInput}
+                                onChange={(e) => setTodoInput(e.target.value)}
+                                placeholder="Enter task"
+                                className="px-4 py-2 bg-slate-100 grow focus:outline-none shadow rounded"
+                            />
+                            <button className='bg-slate-800 text-white px-4 py-2 rounded cursor-pointer'>ADD</button>
+                        </div>
                     </div>
                 </div>
             </div>
