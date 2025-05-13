@@ -144,10 +144,9 @@ export default function students() {
 
   
 
-  if (isLoading) return <Loading />;
 
   return (
-    <Layout>
+    <Layout isLoading={isLoading}>
 
       <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box bg-white">
@@ -206,9 +205,10 @@ export default function students() {
           <h1 className="sm:text-xl text-slate-900">Students List</h1>
           
           {/* Search Bar */}
-          <div className="my-4">
-            <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search by name or batch" className="px-4 py-2 border border-gray-300 rounded-lg w-full sm:w-80"/>
-          </div>
+          <label className="input bg-slate-100 my-4">
+            <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
+            <input type="search" className="grow" placeholder="Search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          </label>
           <div className="flex flex-col">
             <div className="-m-1.5 overflow-x-auto">
               <div className="p-1.5 min-w-full inline-block align-middle">

@@ -111,7 +111,7 @@ export default function Tasks({id}) {
                     <thead>
                         <tr>
                             <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Task No.</th>
-                            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Task</th>
+                            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase w-full">Task</th>
                             <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase text-center">Action</th>
                         </tr>
                     </thead>

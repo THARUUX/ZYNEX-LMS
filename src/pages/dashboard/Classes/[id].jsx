@@ -5,6 +5,7 @@ import Loading from '../../../../components/Loading';
 import { toast } from 'react-toastify';
 import PieChartComponent from '../components/PieChart';
 import Tasks from '../components/Tasks';
+import { MdDelete } from "react-icons/md";
 
 export default function Class() {
     const router = useRouter();
@@ -16,6 +17,8 @@ export default function Class() {
     const [present, setPresent] = useState(0);
     const [absent, setAbsent] = useState(0);
     const [todoInput , setTodoInput] = useState('');
+    const [todos, setTodos] = useState([]);
+
 
     useEffect(() => {
         const presentCount = Object.values(attendance).filter(value => value).length;
@@ -86,6 +89,84 @@ export default function Class() {
         }
     };
 
+    const fetchTodos = async () => {
+        setLoading(true)
+        try {
+            const res = await fetch(`/api/todos?classId=${id}`);
+            const data = await res.json();
+            if (data.success) setTodos(data.todos);
+        } catch (error) {
+            console.error('Error fetching todos:', error);
+            toast.error("Can't fetch to do list" , {position: 'top-center'});
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (id) fetchTodos();
+    }, [id]);
+
+    const addTodo = async () => {
+        setLoading(true);
+        if (todoInput.trim() === '') {
+            toast.loading('Please enter a value tin to do input.' , {position: "top-center"});
+            setLoading(false);
+        }
+        try {
+            const res = await fetch('/api/todos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ classId: id, todo: todoInput })
+            });
+
+            const data = await res.json();
+            if (data.success) setTodos(data.todos);
+            setTodoInput('');
+        } catch (error) {
+            console.error('Error adding todo:', error);
+            toast.error("Can't update to do list" , {position: 'top-center'});
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const toggleTodo = async (d) => {
+        setLoading(true);
+        try {
+            const res = await fetch('/api/todos', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ classId: id, id: d })
+            });
+            const data = await res.json();
+            if (data.success) setTodos(data.todos);
+        } catch (error) {
+            console.error('Error updating todo:', error);
+            toast.error('Error updating todo!' , {position: "top-center"});
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const deleteTodo = async (d) => {
+        setLoading(true);
+        try {
+            const res = await fetch('/api/todos', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ classId: id, id: d })
+            });
+            const data = await res.json();
+            if (data.success) setTodos(data.todos);
+        } catch (error) {
+            console.error('Error deleting todo:', error);
+            toast.error('Error deleting todo!' , {position: "top-center"});
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleAttendanceChange = (studentId) => {
         setAttendance((prev) => {
             // Toggle the attendance status of the student
@@ -125,12 +206,10 @@ export default function Class() {
         if (id) fetchClass();
     }, [id]);
 
-    if (isLoading) return <Loading />;
 
     if (!classData) {
         return (
             <Layout>
-                <Alert ref={alertRef} />
                 <div className="p-5">
                     <div className="w-full tracking-wider px-5 py-3 text-3xl text-slate-900">
                         Class not found or failed to fetch data.
@@ -141,7 +220,7 @@ export default function Class() {
     }
 
     return (
-        <Layout>
+        <Layout isLoading={isLoading}>
             <div className="p-5">
                 <div className="w-full tracking-wider sm:px-5 py-3 text-lg sm:text-3xl text-slate-900 flex justify-between">
                     <div>Class: {classData.type}</div>
@@ -204,18 +283,45 @@ export default function Class() {
                     <div className='w-full sm:w-2/5 shadow-lg rounded max-h-[100vh] sm:max-h-[50vh] overflow-y-scroll'>
                         <Tasks id={classData.id} />
                     </div>
-                    <div className='w-full sm:w-2/5 shadow-lg rounded p-5 max-h-[100vh] sm:max-h-[50vh] flex flex-col gap-5'>
-                        <div>To Do List</div>
+                    <div className='w-full sm:w-2/5 shadow-lg rounded p-5 max-h-[100vh] sm:max-h-[50vh] overflow-y-scroll flex flex-col gap-5'>
+                        <div className='text-xl'>To Do List</div>
                         <div className='flex w-full gap-2'>
-                            <input                     
-                                type="text"
+                            <input
+                                type='text'
                                 value={todoInput}
                                 onChange={(e) => setTodoInput(e.target.value)}
-                                placeholder="Enter task"
-                                className="px-4 py-2 bg-slate-100 grow focus:outline-none shadow rounded"
+                                placeholder='Enter task'
+                                className='px-4 py-2 bg-slate-100 grow focus:outline-none shadow rounded'
                             />
-                            <button className='bg-slate-800 text-white px-4 py-2 rounded cursor-pointer'>ADD</button>
+                            <button onClick={addTodo} className='bg-slate-800 text-white px-4 py-2 rounded cursor-pointer'>ADD</button>
                         </div>
+                        <table className='w-full divide-y divide-gray-200'>
+                            <thead>
+                                <tr >
+                                    <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase w-full'>Task</th>
+                                    <th className='px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase '>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className='divide-y divide-gray-200'>
+                                {todos
+                                    .sort((a, b) => a.completed - b.completed) // Move completed tasks to bottom
+                                    .map(todo => (
+                                        <tr key={todo.id} className='duration-300'>
+                                            <td className={`py-2 px-4 ${todo.completed ? 'line-through text-gray-500' : ''}`}>{todo.text}</td>
+                                            <td className='py-2 px-4'>
+                                                <button onClick={() => toggleTodo(todo.id)} className='px-3 py-1 rounded cursor-pointer'>
+                                                    {!todo.completed ? "❌" : '✅'}
+                                                </button>
+                                            </td>
+                                            <td className='py-2 px-4 flex'>
+                                                <button onClick={() => deleteTodo(todo.id)} className='bg-red-500 text-white px-3 py-1 rounded'>
+                                                    <MdDelete />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

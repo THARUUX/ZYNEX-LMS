@@ -20,11 +20,11 @@ export default function Index() {
   const [filterText, setFilterText] = useState("");
 
     // Filter students based on input text
-  const searchedStudents = assignedStudents.filter(
+  const searchedStudents = Array.isArray(assignedStudents) ? assignedStudents.filter(
       (entry) =>
           entry.class_name.toLowerCase().includes(filterText.toLowerCase()) ||
           entry.student_name.toLowerCase().includes(filterText.toLowerCase())
-  );
+  ) : [];
 
   useEffect(() => {
     fetchClassTypes();
@@ -186,7 +186,7 @@ export default function Index() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {classTypes.length === 0 ? (
+                  {Array.isArray(classTypes) && classTypes.length === 0 ? (
                     <tr>
                       <td colSpan="2" className="text-center py-2">No students assigned</td>
                     </tr>

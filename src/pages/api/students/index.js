@@ -1,16 +1,16 @@
-import pool from "../../../../lib/db";
+import { pool } from "../../../../lib/db";
 
 export default async function handler(req, res) {
-  if (req.method === "GET") {
-    try {
-      // Query the database to get all students
-      const [students] = await pool.query("SELECT * FROM students ORDER BY id");
-
-      res.status(200).json(students);
-    } catch (error) {
-      res.status(500).json({ message: "Database error", error });
+  try {
+    if (req.method === "GET") {
+      const [students] = await pool.execute("SELECT * FROM students ORDER BY id");
+      return res.status(200).json(students);
     }
-  } else {
-    res.status(405).json({ message: "Method not allowed" });
+
+    res.setHeader("Allow", ["GET"]);
+    return res.status(405).json({ message: `Method ${req.method} not allowed` });
+  } catch (error) {
+    console.error("Database error:", error);
+    return res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 }
