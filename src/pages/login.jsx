@@ -1,26 +1,52 @@
-import Image from 'next/image'
-import React from 'react'
-import logo from '../../public/Assets/logo-home-dark.png'
-import { UserButton , SignedIn , SignedOut , SignInButton} from '@clerk/nextjs'
+import { useState } from "react";
+import { useRouter } from "next/router";
+import Cookie from "js-cookie";
 
-export default function login() {
+export default function Login() {
+  const [form, setForm] = useState({ email: "", password: "" });
+  const router = useRouter();
+
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+    
+    if (res.ok) {
+      Cookie.set("token", data.token, { path: "/" });
+      router.push("/dashboard");
+    } else {
+      alert(data.message);
+    }
+  };
+
   return (
-    <div className='bg-slate-100 w-screen h-screen flex justify-center'>
-      <div className='w-full max-w-[1700px] min-h-screen flex py-40'>
-        <div className='w-1/2 flex justify-center items-center p-10'>
-            <Image className='w-1/2' src={logo} width={0} height={0} />
-
+    <div className="w-screen h-screen flex justify-center items-center bg-[url('/Assets/bg.png')] bg-bl">
+      <form onSubmit={handleSubmit} className="backdrop-blur-md bg-white/10 brightness-150 py-10 flex px-10 flex-col rounded-lg">
+        <h1 className="w-full  text-white/75 py-5 flex flex-col items-center justify-center"><span className="tracking-widest text-4xl">ZYNEX LMS</span> <span className="uppercase tracking-[100%] text-sm mt-2">login</span></h1>
+        <div className="flex flex-col gap-10 py-10 w-96">
+          <input name="email" className="border-b border-white focus:outline-0 text-white px-2 py-2" placeholder="Email" onChange={handleChange} required />
+          <input
+            name="password"
+            placeholder="Password"
+            type="password"
+            className="border-b border-white focus:outline-0 text-white px-2 py-2"
+            onChange={handleChange}
+            required
+          />
         </div>
-        <div className='w-1/2 flex flex-col justify-center items-center bg-slate-800  rounded'>
-        <div className='mb-10 text-slate-100 tracking-widest text-xl'>Sign in to ZYNEX LMS</div>
-        <SignedOut>
-            <SignInButton mode='modal' className="bg-slate-100 cursor-pointer py-2 px-3 rounded shadow-sm duration-200 hover:bg-slate-300 scale-105 hover:shadow-md"/>
-        </SignedOut>
-        <SignedIn>
-            <UserButton />
-        </SignedIn>
+        <div className="w-full flex justify-center items-center mb-10">
+          <button type="submit" className="bg-gradient-to-r from-violet-600 to-indigo-600 w-full py-2 rounded text-white cursor-pointer hover:brightness-125 duration-300">Login</button>
         </div>
-      </div>
+      </form>
     </div>
-  )
+  );
 }
+

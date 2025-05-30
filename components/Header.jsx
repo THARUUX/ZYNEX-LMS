@@ -1,11 +1,4 @@
 import React from 'react'
-import {
-    SignInButton,
-    SignUpButton,
-    SignedIn,
-    SignedOut,
-    UserButton,
-  } from '@clerk/nextjs'
 import Link from 'next/link'
 
 export default function Header() {
@@ -14,9 +7,6 @@ export default function Header() {
         <div>
             <Link href='/dashboard/' >Dashboard</Link>
         </div>
-        <SignedIn>
-            <UserButton showName />
-        </SignedIn>
     </div>
   )
 }

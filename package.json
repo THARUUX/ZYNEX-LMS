@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/backend": "^1.25.8",
-    "@clerk/nextjs": "^6.12.4",
+    "bcryptjs": "^3.0.2",
     "cally": "^0.8.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.4.10",
-    "mysql2": "^3.13.0",
+    "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "mysql2": "^3.14.1",
     "next": "15.2.1",
     "preline": "^3.0.0",
     "react": "^19.0.0",

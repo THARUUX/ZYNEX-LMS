@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { UserButton , SignedIn , SignedOut , SignInButton} from '@clerk/nextjs'
 
 const geistMain = Montserrat({
   variable: "--font-geist-sans",
@@ -39,14 +38,10 @@ export default function Home() {
               Zynex LMS is a powerful, intuitive, and modern Learning Management System built to empower institutions, educators, and learners. Whether you're a school, university, training center, or a corporate team, Zynex transforms the way you deliver, manage, and experience learning.
             </div>
             <div className="w-full sm:w-1/2 p-5 sm:p-40 tracking-widest text-xl text-slate-800 animate-fade-up flex h-full justify-center items-center">
-              <SignedOut>
-                  <SignInButton mode='modal' className="text-white py-3 rounded hover:scale-105 shadow-lg px-8 bg-gradient-to-r from-blue-700 to-purple-500 bg-[length:150%_150%] bg-left hover:bg-right duration-500 transition-all cursor-pointer ease-in-out"/>
-              </SignedOut>
-              <SignedIn>
+
                 <Link href="/dashboard/" className="text-white py-3 rounded hover:scale-105 shadow-lg px-8 bg-gradient-to-r from-blue-700 to-purple-500 bg-[length:150%_150%] bg-left hover:bg-right duration-500 transition-all cursor-pointer ease-in-out">
                   Dashboard
                 </Link>
-              </SignedIn>
             </div>
           </div>
           <div className="w-full h-screen">

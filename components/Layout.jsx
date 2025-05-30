@@ -1,6 +1,5 @@
 "use client"
 
-import { useUser } from "@clerk/nextjs" // Ensure you are correctly importing useUser from Clerk
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
 import Loading from "./Loading"

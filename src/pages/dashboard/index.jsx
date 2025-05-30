@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import Layout from './components/Layout';
 import {
   LineChart,
@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import { toast } from 'react-toastify';
 
-export default function index() {
+export default function index({user}) {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState('');
@@ -86,6 +86,7 @@ export default function index() {
       Absent: absent,
     };
   });
+
 
   return (
     <Layout isLoading={loading}>

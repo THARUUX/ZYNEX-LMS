@@ -1,27 +1,21 @@
-import { clerkClient } from '@clerk/nextjs/server';
+import { pool } from "../../../lib/db";
+import bcrypt from "bcryptjs";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+  if (req.method !== "POST") return res.status(405).end();
 
-  try {
-    const { email, password } = req.body;
+  const { name, email, password, role = "user" } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
-    }
+  const [existing] = await pool.query("SELECT * FROM users WHERE email = ?", [email]);
+  if (existing.length > 0) return res.status(400).json({ message: "Email already exists" });
 
-    const response = await clerkClient.users.createUser({
-      firstName: 'Test',
-      lastName: 'User',
-      emailAddress: [email],
-      password: password,
-    });
+  const hashedPassword = await bcrypt.hash(password, 10);
+  await pool.query("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)", [
+    name,
+    email,
+    hashedPassword,
+    role,
+  ]);
 
-    return res.status(201).json({ message: "User created successfully", user: response });
-  } catch (error) {
-    console.error("Error creating user:", error);
-    return res.status(500).json({ error: "Error creating user" });
-  }
+  res.status(201).json({ message: "User registered successfully" });
 }

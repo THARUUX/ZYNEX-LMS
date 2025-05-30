@@ -1,18 +1,19 @@
 "use client" 
 
-import { useUser } from "@clerk/nextjs"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Header from "./Header"
 import HeaderSM from "./HeaderSM"
 import BackButton from "./BackBtn"
 import Loading from "../../../../components/Loading"
+import Cookie from "js-cookie"
+import { jwtDecode } from "jwt-decode"
 
-export default function Layout({ children, isLoading }) {
-  const { user, isLoaded } = useUser()
+export default function Layout({ children, isLoading}) {
   const router = useRouter()
   const [isAdmin, setIsAdmin] = useState(false)
   const [ dbError , setError ] = useState('');
+
   
   const checkDBStatus = async () => {
     try {
@@ -27,24 +28,47 @@ export default function Layout({ children, isLoading }) {
       setError(true); // Set error if fetch fails
     }
   };
+
+    const [user, setUser] = useState(null);
+  
+    useEffect(() => {
+      const checkAuth = () => {
+      const token = Cookie.get("token");
+    
+      if (!token && !isPublic) {
+        console.log("No token and route is protected, redirecting to login");
+        router.push("/login");
+        return;
+      }
+  
+      if (token) {
+        try {
+  
+          const decoded = jwtDecode(token);
+          setUser(decoded);
+          if(decoded.role === "admin"){
+            setIsAdmin(true);
+          } else {
+            setIsAdmin(false);
+          }
+        } catch (err) {
+          console.log("JWT verification failed in Layout:", err.message);
+          //Cookie.remove("token");
+          router.push("/login");
+        }
+      }
+    };
+  
+      checkAuth();
+    }, [router.pathname]);
   
   
 
   useEffect(() => {
-    if (!isLoaded) return // Wait for user to load
     checkDBStatus();
 
-    // Get role from Clerk metadata
-    const role = user?.publicMetadata?.role || "user"
+  }, [])
 
-    if (role !== "admin") {
-      router.push("/") // Redirect if not admin
-    } else {
-      setIsAdmin(true)
-    }
-  }, [isLoaded, user])
-
-  if (!isLoaded || !isAdmin) return <Loading />
 
   if (dbError) {
     return (
@@ -60,7 +84,7 @@ export default function Layout({ children, isLoading }) {
         <div className="max-w-[2000px] bg-slate-50 w-full min-h-screen flex flex-col sm:flex-row">
           {isLoading ? <Loading /> : null}
           <div className="w-80 h-screen bg-slate-200 hidden sm:flex">
-            <Header/>
+            <Header  user={user}/>
           </div>
           <div className="w-screen sm:hidden">
             <HeaderSM />
