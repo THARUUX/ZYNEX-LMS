@@ -2,11 +2,13 @@ import React from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Cookie from 'js-cookie'
+import { useRouter } from 'next/router'
 
 export default function Header( {user}) {
     const pathname = usePathname() // "/dashboard/students"
     const segments = pathname.split("/") // ["", "dashboard", "students"]
     const tab = segments.pop()
+    const router = useRouter();
 
     let uname = "Guest";
     if (user && user.name) {
@@ -15,6 +17,8 @@ export default function Header( {user}) {
 
     const logout = () => {
         Cookie.remove("token");
+        router.push("/login");
+        return
     }
 
     const active = "flex gap-3 px-3 py-3 pl-7 rounded-full bg-slate-700 text-white shadow-lg duration-300 hover:bg-slate-500  hover:translate-x-2";

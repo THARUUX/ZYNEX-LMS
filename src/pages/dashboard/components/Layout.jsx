@@ -34,12 +34,17 @@ export default function Layout({ children, isLoading}) {
     useEffect(() => {
       const checkAuth = () => {
       const token = Cookie.get("token");
-    
-      if (!token && !isPublic) {
-        console.log("No token and route is protected, redirecting to login");
-        router.push("/login");
-        return;
+
+      try{
+        if (token !== true && isPublic !== true) {
+          console.log("No token and route is protected, redirecting to login");
+          router.push("/login");
+          return;
+        }
+      } catch (err) {
+        //router.refresh();
       }
+
   
       if (token) {
         try {
@@ -87,7 +92,7 @@ export default function Layout({ children, isLoading}) {
             <Header  user={user}/>
           </div>
           <div className="w-screen sm:hidden">
-            <HeaderSM />
+            <HeaderSM user={user}/>
           </div>
           <div className="w-full h-screen overflow-y-scroll">
             {children}
