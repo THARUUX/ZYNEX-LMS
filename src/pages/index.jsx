@@ -31,13 +31,13 @@ export default function Home() {
 
       <section className={`snap-start w-screen min-h-screen flex flex-col items-center bg-gradient-to-tl from-blue-100 to-purple-50 text-main`}>
           <div className="w-full h-screen flex flex-col  justify-center items-center">
-            <div className="text-7xl font-black text-main animate-fade">🚀 Welcome to <span className="bg-gradient-to-r from-blue-700 to-purple-500 bg-clip-text text-transparent">ZYNEX LMS</span></div>
+            <div className="text-5xl sm:text-7xl text-center font-black text-main animate-fade">🚀 Welcome to <span className="bg-gradient-to-r from-blue-700 to-purple-500 bg-clip-text text-transparent">ZYNEX LMS</span></div>
           </div>
-          <div className="w-full h-screen flex">
-            <div className="w-full sm:w-1/2 p-5 sm:p-40 tracking-widest text-xl text-slate-800 animate-fade-up flex h-full justify-center items-center">
+          <div className="w-full h-screen flex flex-col sm:flex-row">
+            <div className="w-full sm:w-1/2 p-5 sm:p-40 tracking-widest text-xl text-slate-800 animate-fade-up flex sm:h-full justify-center items-center">
               Zynex LMS is a powerful, intuitive, and modern Learning Management System built to empower institutions, educators, and learners. Whether you're a school, university, training center, or a corporate team, Zynex transforms the way you deliver, manage, and experience learning.
             </div>
-            <div className="w-full sm:w-1/2 p-5 sm:p-40 tracking-widest text-xl text-slate-800 animate-fade-up flex h-full justify-center items-center">
+            <div className="w-full sm:w-1/2 p-5 py-20 sm:py-0 sm:p-40 tracking-widest text-xl text-slate-800 animate-fade-up flex sm:h-full justify-center items-center">
 
                 <Link href="/dashboard/" className="text-white py-3 rounded hover:scale-105 shadow-lg px-8 bg-gradient-to-r from-blue-700 to-purple-500 bg-[length:150%_150%] bg-left hover:bg-right duration-500 transition-all cursor-pointer ease-in-out">
                   Dashboard
@@ -81,8 +81,8 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="w-full min-h-screen h-screen flex flex-col p-20">
-            <div className="p-20 flex gap-10 justify-between  flex-wrap">
+          <div className="w-full min-h-screen sm:h-screen flex flex-col sm:p-20 p-10">
+            <div className="sm:p-20 py-20 flex flex-col sm:flex-row gap-10 justify-between  flex-wrap">
               <div className="flex flex-col w-full sm:w-1/4 h-fit text-white gap-5 rounded-lg shadow-lg bg-gradient-to-r from-blue-700 to-purple-500 p-10">
                 <div className="text-xl w-full text-center">
                   For Educators & Institutions
