@@ -98,7 +98,7 @@ export default function Home() {
                   <div> Experience smooth learning on your phone.
                     Available now for Android devices — try it out today!</div>
                   <div className="w-full mt-10 ">
-                    <a href="/Application/zynex-lms.apk" download className="flex w-fit items-center gap-2 text-white py-3 rounded hover:scale-105 shadow-lg px-8 bg-gradient-to-r from-blue-700 to-purple-500 bg-[length:150%_150%] bg-left hover:bg-right duration-500 transition-all cursor-pointer ease-in-out">
+                    <a href="/Application/zynex-lms.apk" download target="_blank" rel="noopener noreferrer" className="flex w-fit items-center gap-2 text-white py-3 rounded hover:scale-105 shadow-lg px-8 bg-gradient-to-r from-blue-700 to-purple-500 bg-[length:150%_150%] bg-left hover:bg-right duration-500 transition-all cursor-pointer ease-in-out">
                     <FaCloudDownloadAlt />
                       Download <span className="text-xs">(6MB)</span>
                     </a>
