@@ -227,7 +227,7 @@ export default function Class() {
                     <div>{classData.date.split('T')[0]}</div>
                 </div>
                 <div className="w-full flex flex-col sm:flex-row py-5 gap-10">
-                    <div className='sm:w-2/5 shadow-lg rounded py-5 px-2 max-h-[100vh] sm:max-h-[50vh]'>
+                    <div className='sm:w-2/5 shadow-lg rounded py-5 px-2 max-h-[100vh] '>
                         <div className='w-full text-center uppercase'>Student Attendance</div>
                         <table className="w-full divide-y divide-gray-200">
                             <thead>
@@ -237,7 +237,7 @@ export default function Class() {
                                     <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Attendance</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody className="divide-y divide-gray-200 ">
                             {
                                 classStudents.length > 0 ? (
                                     classStudents.map((cs) => {

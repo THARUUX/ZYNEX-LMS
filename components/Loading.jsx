@@ -28,7 +28,7 @@ export default function Loading() {
     toast.error('Error connecting to the database!' , {position: "top-center"});
   } else {
     return (
-      <div className='fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-white/50'>
+      <div className='fixed top-0 left-0 w-screen h-screen z-50 flex justify-center items-center bg-white/50'>
         <div class="spinner"></div>
       </div>
     )

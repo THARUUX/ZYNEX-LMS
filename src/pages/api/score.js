@@ -20,27 +20,51 @@ export default async function handler(req, res) {
       res.status(500).json({ message: "Internal Server Error" });
     }
 
-  } else if (req.method === "GET") {
-    const { type, typeID } = req.query;
+    } else if (req.method === "GET") {
+      const { type, typeID, student_id } = req.query;
 
-    if (!type || !typeID) {
-      return res.status(400).json({ message: "Missing query parameters." });
+      try {
+        let query = "SELECT * FROM scores WHERE 1=1";
+        const values = [];
+
+        if (type && typeID) {
+          query += " AND type = ? AND type_id = ?";
+          values.push(type, typeID);
+        }
+
+        if (student_id) {
+          query += " AND student_id = ?";
+          values.push(student_id);
+        }
+
+        const [rows] = await pool.execute(query, values);
+        res.status(200).json(rows);
+      } catch (error) {
+        console.error("Database fetch error:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+      }
+    } else if (req.method === "DELETE") {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ message: "Missing score ID." });
     }
 
     try {
-      const [rows] = await pool.execute(
-        "SELECT * FROM scores WHERE type = ? AND type_id = ?",
-        [type, typeID]
-      );
+      const [result] = await pool.execute("DELETE FROM scores WHERE id = ?", [id]);
 
-      res.status(200).json(rows);
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Score not found." });
+      }
+
+      res.status(200).json({ message: "Score deleted successfully." });
     } catch (error) {
-      console.error("Database fetch error:", error);
+      console.error("Database delete error:", error);
       res.status(500).json({ message: "Internal Server Error" });
     }
 
   } else {
-    res.setHeader("Allow", ["POST", "GET"]);
+    res.setHeader("Allow", ["POST", "GET", "DELETE"]);
     res.status(405).json({ message: "Method Not Allowed" });
   }
 }

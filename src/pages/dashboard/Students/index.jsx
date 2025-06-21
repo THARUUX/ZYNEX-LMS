@@ -172,11 +172,11 @@ export default function students() {
 
 
       <div className="p-5">
-        <div className="w-full tracking-wider px-5 py-3 text-xl sm:text-3xl text-slate-900">
+        <div className="w-full tracking-wider px-2 sm:px-5 py-3 text-xl sm:text-3xl text-slate-900">
           Students Management
         </div>
         <div className="w-full flex flex-col py-5">
-          <div className="sm:text-xl pl-5 mb-2">Add Students</div>
+          <div className="sm:text-xl px-2 sm:pl-5 mb-2">Add Students</div>
           {message && <p className="text-green-600 pl-5">{message}</p>}
           <form onSubmit={handleSubmit} className="flex w-full flex-wrap md:flex-nowrap gap-4">
             <div className={`w-full sm:max-w-sm ${formData.id ? '' : 'hidden'}`}>
@@ -195,7 +195,7 @@ export default function students() {
               <label htmlFor="joined_date" className="sr-only">Joined Date</label>
               <input type="date" id="joined_date" name="joined_date" value={formData.joined_date} onChange={handleChange} className="py-2.5 px-4 block w-full border-gray-200 rounded-lg sm:text-sm bg-slate-100" required/>
             </div>
-            <button className="bg-slate-900 text-white px-5 shadow-md cursor-pointer rounded duration-200 hover:bg-slate-700" type="submit">
+            <button className="bg-slate-900 text-white grow px-5 shadow-md cursor-pointer rounded duration-200 hover:bg-slate-700" type="submit">
               {formData.id ? 'UPDATE' : 'ADD'}
             </button>
           </form>
@@ -223,14 +223,18 @@ export default function students() {
                         <th scope="col" className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 max-h-screen overflow-y-scroll">
                       {filteredStudents.length === 0 ? (
                         <tr>
                           <td colSpan="4" className="text-center py-2">No students found</td>
                         </tr>
                       ) : (
                         filteredStudents.map((student) => (
-                          <tr className={`hover:bg-gray-100 ${!student.status ? "bg-gray-200 text-gray-500" : "text-gray-800"}`} key={student.id}>
+                          <tr
+                            className={`hover:bg-gray-100 cursor-pointer ${!student.status ? "bg-gray-200 text-gray-500" : "text-gray-800"}`}
+                            key={student.id}
+                            onClick={() => router.push(`/dashboard/Students/${student.id}`)}
+                          >
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{student.id}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{student.name}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">{student.batch}</td>

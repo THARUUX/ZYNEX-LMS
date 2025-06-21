@@ -105,9 +105,9 @@ export default function Events() {
             </div>
             <div className="w-full flex flex-col py-5">
               <div className="sm:text-xl sm:pl-5 mb-2">Schedule an event</div>
-              <form onSubmit={handleSubmit} className="flex sm:flex-col w-full sm:w-1/2 sm:px-5 flex-wrap gap-4 justify-between sm:justify-normal">
-                <div className="flex w-full gap-2">
-                  <div className="grow-1 sm:max-w-sm">
+              <form onSubmit={handleSubmit} className="flex sm:flex-row w-full sm:px-5 items-end flex-wrap gap-4 justify-between sm:justify-normal">
+                <div className="flex w-full sm:w-1/3 gap-2">
+                  <div className="grow-1 sm:max-w-full">
                     <label htmlFor="type">Event name</label> 
                     <input
                       type="text"
@@ -120,7 +120,7 @@ export default function Events() {
                     />
                   </div>
                 </div>
-                <div className="w-full flex gap-2">
+                <div className="w-full sm:w-1/2 flex gap-2">
                   <div className="grow-1 flex-col sm:max-w-sm flex justify-center">
                     <label htmlFor="date">Starting Date</label> 
                     <input
@@ -152,7 +152,7 @@ export default function Events() {
               </form>
             </div>
 
-            <div className="sm:p-5 mt-5">
+            <div className="sm:p-5 mt-5 sm:mt-0">
               <div className="flex flex-col sm:flex-row justify-between items-center">
                 <h1 className="text-xl text-slate-900 w-full sm:w-auto">Event List</h1>          
                 <div className="my-4">
@@ -191,7 +191,7 @@ export default function Events() {
                         <td colSpan="5" className="text-center py-2">No events found</td>
                       </tr>
                     ) : (
-                      filteredEvents.map((c) => {
+                      filteredEvents.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).map((c) => {
                         return (
                           <tr
                             key={c.id}

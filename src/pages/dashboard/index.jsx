@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { toast } from 'react-toastify';
 
+
 export default function index({user}) {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);

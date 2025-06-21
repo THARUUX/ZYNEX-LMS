@@ -2,6 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
+import { MdDelete } from "react-icons/md";
+import { useConfirm } from '../components/Dialog';
+import { FaDownload } from "react-icons/fa";
+import BarGraph from '../components/BarGraph';
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export default function EventPage() {
     const router = useRouter();
@@ -26,6 +32,7 @@ export default function EventPage() {
         date: ""
     });
     const [scores , setScores] = useState([]);
+    const [reportData , setReportData] = useState([]);
 
     const fetchEvent = async () => {
         if (!id) return;
@@ -80,6 +87,22 @@ export default function EventPage() {
             }
         } catch (error) {
             toast.error("Error updating event", { position: "top-center" });
+        }
+    };
+
+    const { ask } = useConfirm();
+
+    const confirmDelete = async (name , _id) => {
+        const result = await ask(`Are you sure you want to delete ${name}'s score?`);
+        if (result) {
+         try {
+            await fetch(`/api/score?id=${_id}`, {
+            method: "DELETE"
+            });
+            fetchScores();
+         } catch {
+            toast.error("Error deleting score", { position: "top-center" });
+         }
         }
     };
 
@@ -159,6 +182,41 @@ export default function EventPage() {
         }
     };
     
+    const downloadScoresPDF = (_rdata) => {
+        const doc = new jsPDF();
+        const tableColumn = ["Name", "Score (%)", "Submitted Date"];
+        const tableRows = _rdata.map((c) => [
+            c.student_name,
+            `${c.score}%`,
+            c.date,
+        ]);
+        console.log(tableRows)
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            styles: { fontSize: 10 },
+            theme: "striped",
+            headStyles: { fillColor: [52, 73, 94] },
+            margin: { top: 20 },
+        });
+
+        doc.save("scores-table.pdf");
+    };
+
+    useEffect(() => {
+    if (scores && scores.length > 0) {
+        const transedData = scores.map((item) => ({
+        name: item.student_name,
+        Marks: Number(item.score), // Score shown in the bar chart
+        uv: 0,
+        amt: 0,
+        }));
+
+        setReportData(transedData);
+    }
+    }, [scores]); // ✅ Run only when `scores` changes
+
     
 
     return (
@@ -225,8 +283,8 @@ export default function EventPage() {
                         </button>
                     </form>
                 </div>
-                <div className='w-full p-5'>
-                    <div className='w-full sm:w-2/5 p-5 flex-col sm:flex-row rounded max-h-screen sm:max-h-[50vh] shadow-lg'>
+                <div className='w-full flex gap-5 flex-col sm:flex-row sm:p-5'>
+                    <div className='w-full sm:w-2/5 p-5 flex-col sm:flex-row rounded max-h-screen sm:max-h-[70vh] overflow-y-scroll shadow-lg'>
                         <div className="w-full text-xl my-3">Score Board</div>
                         <div className="flex flex-wrap gap-2 justify-between">
                             <div className="relative w-full flex gap-3">
@@ -279,12 +337,22 @@ export default function EventPage() {
                                         className="w-full px-4 py-2 rounded focus:outline-none "
                                     />
                                 </label>
-                                <button onClick={() => engageStudent()} className="bg-slate-800 text-white px-4 py-2 rounded">
+                                <button onClick={() => engageStudent()} className="bg-slate-800 grow text-white px-4 py-2 rounded">
                                     Submit
                                 </button>
                             </div>
                         </div>
                         <div className="overflow-scroll mt-5">
+                            <div onClick={() => {
+                                if (scores && scores.length > 0) {
+                                downloadScoresPDF(scores);
+                                } else {
+                                    alert("No scores to download.");
+                                }}
+                                } className='py-2 px-3 bg-slate-200 flex gap-5 cursor-pointer justify-center items-center'>
+                                    Download PDF
+                                <FaDownload />
+                            </div>
                             <table className="min-w-full divide-y divide-gray-200">
                             <thead>
                                 <tr>
@@ -301,7 +369,7 @@ export default function EventPage() {
                                 </tr>
                                 ) : (
                                 scores.map((c) => (
-                                    <tr key={c.id} onClick={() => router.push(`/dashboard/Classes/${c.id}`)} className={c.status === "done" ? 'bg-green-200 duration-300 hover:bg-green-50 cursor-pointer' : 'bg-blue-50 duration-300 hover:bg-blue-100 cursor-pointer'}>
+                                    <tr key={c.id}  className={c.status === "done" ? 'bg-green-200 duration-300 hover:bg-green-50 cursor-pointer' : 'bg-blue-50 duration-300 hover:bg-blue-100 cursor-pointer'}>
                                     <td className="text-xs sm:text-sm px-6 py-4">{c.student_name}</td>
                                     <td className="text-xs sm:text-sm px-6 py-4">{c.score}%</td>
                                     <td className="text-xs sm:text-sm px-6 py-4">{c.date}</td>
@@ -310,11 +378,10 @@ export default function EventPage() {
                                                 className="cursor-pointer"
                                                 type="button"
                                                 onClick={(event) => {
-                                                event.stopPropagation();
-                                                updateClassStatus(c.id, c.status === "done" ? "pending" : "done"); // Toggle status
+                                                    confirmDelete(c.student_name , c.id)
                                                 }}
                                             >
-                                                {c.status === "done" ? "✅" : "❌"}
+                                                <MdDelete className='text-red-500 text-xl' />
                                         </button>
                                     </td>
                                     </tr>
@@ -323,6 +390,9 @@ export default function EventPage() {
                             </tbody>
                             </table>
                         </div>
+                    </div>
+                    <div className="w-full hidden sm:flex sm:w-1/2">
+                        <BarGraph data={reportData} />
                     </div>
                 </div>
             </div>

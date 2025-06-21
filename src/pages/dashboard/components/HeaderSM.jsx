@@ -5,17 +5,25 @@ import { TbMenu2 } from "react-icons/tb";
 import { IoClose } from "react-icons/io5";
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router'
+import { FaUserCircle } from "react-icons/fa";
+import { RiLogoutBoxFill } from "react-icons/ri";
 
 
 export default function HeaderSM({user}) {
-    const pathname = usePathname() // "/dashboard/students"
-    const segments = pathname.split("/") // ["", "dashboard", "students"]
-    const tab = segments.pop()
     const [ nav , setNav ] = useState(false);
 
     const router = useRouter();
 
-    console.log(user);
+    const pathname = usePathname();
+
+    // Ensure pathname is available before proceeding
+    if (!pathname) return null;
+
+    // Split the path and get the last segment (e.g., "students")
+    const segments = pathname.split('/');
+    const tab = segments.pop() || 'dashboard'; // fallback if last segment is empty
+
+    //console.log(user);
     
     let uname = "Guest";
     if (user && user.name) {
@@ -42,7 +50,11 @@ export default function HeaderSM({user}) {
             </div>
         </div>
         
-        <div className={`w-full flex flex-col gap-3 pt-5 px-5 z-50 bg-slate-50  absolute top-full left-0 shadow-2xl ${nav ? 'pb-10 h-fit opacity-100' : 'h-0 opacity-0'}  overflow-hidden duration-300`}>
+        <div className={`h-screen flex flex-col gap-3 pt-5 px-5 z-50 bg-slate-50 fixed top-0 left-0 shadow-2xl ${nav ? 'w-3/5 pb-10 opacity-100' : 'w-0 opacity-0'}  overflow-hidden duration-300`}>
+            <div className="w-full flex flex-col justify-center items-center gap-3 pb-3">
+                <FaUserCircle className='text-7xl'/>
+                <div className='text-lg uppercase'>{uname}</div>
+            </div>
             <Link href={'/dashboard/'} className={tab === 'dashboard' ? active : deactive}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill={tab === 'dashboard' ? "white" : "black"} viewBox="0 0 24 24" id="dashboard">
                 <path fill="none" d="M0 0h24v24H0V0z"></path>
@@ -91,13 +103,9 @@ export default function HeaderSM({user}) {
                 </svg>
                 Configure
             </Link>
-            <div className={`w-full flex py-3 ${deactive} uppercase`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
-                <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
-                </svg>
-                {uname}
-                <span onClick={() => logout()} className='text-xs lowercase opacity-50 bg-red-300 py-1 px-3 cursor-pointer hover:bg-red-500 duration-300 rounded-full'>Logout</span>
+            <div onClick={() => logout()} className={`w-full flex py-3 ${deactive} cursor-pointer`}>
+                <RiLogoutBoxFill className='text-2xl'/>
+                Logout
             </div>
         </div>
 

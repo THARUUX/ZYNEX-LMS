@@ -5,10 +5,15 @@ import Cookie from 'js-cookie'
 import { useRouter } from 'next/router'
 
 export default function Header( {user}) {
-    const pathname = usePathname() // "/dashboard/students"
-    const segments = pathname.split("/") // ["", "dashboard", "students"]
-    const tab = segments.pop()
+    const pathname = usePathname();
     const router = useRouter();
+
+    // Ensure pathname is available before proceeding
+    if (!pathname) return null;
+
+    // Split the path and get the last segment (e.g., "students")
+    const segments = pathname.split('/');
+    const tab = segments.pop() || 'dashboard'; // fallback if last segment is empty
 
     let uname = "Guest";
     if (user && user.name) {

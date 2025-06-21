@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import Layout from '../components/Layout';
 import { useRouter } from 'next/router';
 import Loading from '../../../../components/Loading';
-import Alert from '../../../../components/Alert';
+//import Alert from '../../../../components/Alert';
 import BackButton from '../components/BackBtn';
 
 export default function Student() {
-  const alertRef = useRef(null);
+  //const alertRef = useRef(null);
   const router = useRouter();
   const { id } = router.query;
   const [isLoading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ export default function Student() {
       setStudentData(data);
       setLoading(false);
     } catch (error) {
-      alertRef.current.showAlert(error.message || 'An error occurred', 'Error!');
+      //alertRef.current.showAlert(error.message || 'An error occurred', 'Error!');
       setLoading(false); 
     }
   };
@@ -34,10 +34,19 @@ export default function Student() {
       setLoading(false);
       return data ; 
     } catch (error) {
-      alertRef.current.showAlert(error.message || 'An error occurred', 'Error!');
+      //alertRef.current.showAlert(error.message || 'An error occurred', 'Error!');
       setLoading(false); 
     }
   };
+
+  const fetchScore = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/score?student_id=${id}`)
+      const data = await res.json();
+
+    }
+  }
 
   useEffect(() => {
     if (id) {
@@ -64,20 +73,16 @@ export default function Student() {
 
   return (
     <Layout>
-      <Alert ref={alertRef} />
-      <div className="px-10 py-5">
+      <div className="px-5 sm:px-10 py-5">
         <div className="w-full py-3 flex justify-between">
           <div className='tracking-wider text-3xl text-slate-900'>
             Student: 
-            <span className='text-2l'>
+            <span className='text-md sm:text-2l'>
                {studentData.name}
             </span> 
           </div>
-          <div>
-            <BackButton />
-          </div>
         </div>
-        <div className='mt-5 bg-slate-800 text-white p-5 rounded-lg w-fit shadow-lg cursor-pointer duration-300 hover:scale-105'>
+        <div className='mt-5 bg-white text-slate-800 p-5 rounded-lg w-full sm:w-fit shadow-lg cursor-pointer duration-300 hover:scale-105'>
           <div className='text-xl border-b pb-5 font-bold px-10'>Assigned Classes</div>
           <div className=' flex flex-col gap-2 mt-3'>
             {classNames.length === 0 ? (

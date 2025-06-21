@@ -28,7 +28,7 @@ export default function Login() {
   };
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center bg-[url('/Assets/bg.png')] bg-bl">
+    <div className="w-screen h-screen flex justify-center items-center bg-cover bg-center bg-[url('/Assets/bg.png')] bg-bl">
       <form onSubmit={handleSubmit} className="backdrop-blur-md bg-white/10 brightness-150 py-10 w-full sm:w-auto flex px-10 flex-col rounded-lg">
         <h1 className="w-full  text-white/75 py-5 flex flex-col items-center justify-center"><span className="tracking-widest text-4xl">ZYNEX LMS</span> <span className="uppercase tracking-[100%] text-sm mt-2">login</span></h1>
         <div className="flex flex-col gap-10 py-10 sm:w-96">
