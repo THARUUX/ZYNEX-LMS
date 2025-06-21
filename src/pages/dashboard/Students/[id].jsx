@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import Loading from '../../../../components/Loading';
 //import Alert from '../../../../components/Alert';
 import BackButton from '../components/BackBtn';
+import { toast } from 'react-toastify';
 
 export default function Student() {
   //const alertRef = useRef(null);
@@ -45,6 +46,8 @@ export default function Student() {
       const res = await fetch(`/api/score?student_id=${id}`)
       const data = await res.json();
 
+    } catch (err) {
+      toast.error("Error fetching scores", { position: "top-center" });
     }
   }
 
