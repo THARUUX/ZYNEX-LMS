@@ -6,6 +6,10 @@ import { toast } from 'react-toastify';
 import PieChartComponent from '../components/PieChart';
 import Tasks from '../components/Tasks';
 import { MdDelete } from "react-icons/md";
+import { FaDownload } from 'react-icons/fa';
+
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export default function Class() {
     const router = useRouter();
@@ -206,6 +210,60 @@ export default function Class() {
         if (id) fetchClass();
     }, [id]);
 
+    const getReport = (classStudents) => {
+        const doc = new jsPDF();
+        const tableColumn = ["Name", "Status"];
+        
+        const tableRows = classStudents.map((c) => [
+            c.student_name,
+            attendance[c.student_id] ? "Present" : "Absent",
+        ]);
+
+        const presentCount = classStudents.filter(c => attendance[c.student_id]).length;
+        const absentCount = classStudents.length - presentCount;
+
+        doc.setFontSize(16);
+        doc.text("Attendance Report", 14, 15);
+
+        doc.setFontSize(10);
+        doc.text(`${classData.type} (${classData.date.split('T')[0]})`, 14, 22);
+
+        doc.text(`Present: ${presentCount}`, 14, 30);
+        doc.text(`Absent: ${absentCount}`, 50, 30);
+
+        // Table with footer on each page
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            styles: { fontSize: 10 },
+            theme: "striped",
+            headStyles: { fillColor: [52, 73, 94] },
+            margin: { top: 35 },
+            didDrawPage: (data) => {
+                // Add footer
+                const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+                doc.setFontSize(8);
+                doc.text(
+                    `Page ${doc.internal.getNumberOfPages()}`, 
+                    data.settings.margin.left, 
+                    pageHeight - 10
+                );
+
+                doc.text(
+                    "ZYNEX LMS | lms.zynex.info", 
+                    doc.internal.pageSize.getWidth() - data.settings.margin.right, 
+                    pageHeight - 10,
+                    { align: "right" }
+                );
+            }
+        });
+
+        doc.save(`Attendance - ${classData.type} (${classData.date.split('T')[0]}).pdf`);
+    };
+
+
+
+
 
     if (!classData) {
         return (
@@ -280,6 +338,16 @@ export default function Class() {
                         <div className='w-full text-center uppercase'>Student Attendance Report</div>
 
                         <PieChartComponent data={attendanceData} />
+                        <div onClick={() => {
+                            if (classStudents && classStudents.length > 0) {
+                            getReport(classStudents);
+                            } else {
+                                alert("No attendance to download.");
+                            }}
+                            } className='py-2 px-3 bg-slate-200 flex gap-5 cursor-pointer justify-center items-center'>
+                                Download PDF
+                            <FaDownload />
+                        </div>
                     </div>
                 </div>
                 <div className="w-full flex flex-col sm:flex-row gap-10">

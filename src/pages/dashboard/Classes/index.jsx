@@ -140,7 +140,7 @@ export default function index() {
         <div className="w-full flex flex-col py-5">
           <div className="sm:text-xl sm:pl-5 mb-2">Schedule a class</div>
           {message && <p className="text-green-600 pl-5">{message}</p>}
-          <form onSubmit={handleSubmit} className="flex sm:flex-col w-full sm:w-1/2 flex-wrap gap-4 justify-between sm:justify-normal">
+          <form onSubmit={handleSubmit} className="flex sm:flex-col w-full sm:px-5 sm:w-1/2 flex-wrap gap-4 justify-between sm:justify-normal">
             <div className="flex w-full gap-2">
               <div className="grow-1 sm:max-w-sm">
                 <label htmlFor="type">Class type</label> 
@@ -223,53 +223,88 @@ export default function index() {
             </div>
           </div>
           <div className="overflow-scroll">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Class Type</th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Date</th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Start</th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">End</th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 max-h-screen overflow-y-scroll">
-                {[...filteredClasses]
+            <div className="hidden sm:flex w-full">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Class Type</th>
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Start</th>
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">End</th>
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 max-h-screen overflow-y-scroll">
+                  {[...filteredClasses]
+                    .sort((a, b) => new Date(b.date) - new Date(a.date)) // descending by date
+                    .map((c) => (
+                      <tr
+                        key={c.id}
+                        onClick={() => router.push(`/dashboard/Classes/${c.id}`)}
+                        className={
+                          c.status === "done"
+                            ? 'bg-green-200 duration-300 hover:bg-green-50 cursor-pointer'
+                            : 'bg-blue-50 duration-300 hover:bg-blue-100 cursor-pointer'
+                        }
+                      >
+                        <td className="text-xs sm:text-sm px-6 py-4">{c.type}</td>
+                        <td className="text-xs sm:text-sm px-6 py-4">{c.date.split('T')[0]}</td>
+                        <td className="text-xs sm:text-sm px-6 py-4">{c.start_time}</td>
+                        <td className="text-xs sm:text-sm px-6 py-4">{c.end_time}</td>
+                        <td className="text-xs sm:text-sm px-6 py-4">
+                          {c.status === "done" ? "Completed" : "Pending"}
+                        </td>
+                        <td className="text-xs sm:text-sm px-6 py-4">
+                          <button
+                            className="cursor-pointer"
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              updateClassStatus(c.id, c.status === "done" ? "pending" : "done");
+                            }}
+                          >
+                            {c.status === "done" ? "✅" : "❌"}
+                          </button>
+                        </td>
+                      </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="w-full flex sm:hidden flex-col gap-5">
+              {[...filteredClasses]
                   .sort((a, b) => new Date(b.date) - new Date(a.date)) // descending by date
                   .map((c) => (
-                    <tr
+                    <div
                       key={c.id}
                       onClick={() => router.push(`/dashboard/Classes/${c.id}`)}
                       className={
                         c.status === "done"
-                          ? 'bg-green-200 duration-300 hover:bg-green-50 cursor-pointer'
-                          : 'bg-blue-50 duration-300 hover:bg-blue-100 cursor-pointer'
+                          ? 'bg-green-200 duration-300 hover:bg-green-50 cursor-pointer shadow-md w-full rounded-lg p-5 flex'
+                          : 'bg-blue-50 duration-300 hover:bg-blue-100 cursor-pointer shadow-md w-full rounded-lg p-5 flex'
                       }
                     >
-                      <td className="text-xs sm:text-sm px-6 py-4">{c.type}</td>
-                      <td className="text-xs sm:text-sm px-6 py-4">{c.date.split('T')[0]}</td>
-                      <td className="text-xs sm:text-sm px-6 py-4">{c.start_time}</td>
-                      <td className="text-xs sm:text-sm px-6 py-4">{c.end_time}</td>
-                      <td className="text-xs sm:text-sm px-6 py-4">
-                        {c.status === "done" ? "Completed" : "Pending"}
-                      </td>
-                      <td className="text-xs sm:text-sm px-6 py-4">
-                        <button
-                          className="cursor-pointer"
-                          type="button"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            updateClassStatus(c.id, c.status === "done" ? "pending" : "done");
-                          }}
-                        >
-                          {c.status === "done" ? "✅" : "❌"}
-                        </button>
-                      </td>
-                    </tr>
+                        <div className="w-3/4 flex flex-col">
+                          <div className="text-xl ">{c.type}</div>
+                          <div className="mt-2">{c.date.split('T')[0]}</div>
+                          <div className="text-xs text-black/50">{c.start_time} - {c.end_time}</div>
+                        </div>
+                        <div className="w-1/4 flex justify-center items-center">
+                          <button
+                            className="cursor-pointer"
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              updateClassStatus(c.id, c.status === "done" ? "pending" : "done");
+                            }}
+                          >
+                            {c.status === "done" ? "✅" : "❌"}
+                          </button>
+                        </div>
+                    </div>
                 ))}
-              </tbody>
-            </table>
+            </div>
           </div>
         </div>
       </div>
