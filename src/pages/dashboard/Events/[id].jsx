@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { MdDelete } from "react-icons/md";
-import { useConfirm } from '../components/Dialog';
+import { useConfirm } from '../../../../components/Dialog';
 import { FaDownload } from "react-icons/fa";
 import BarGraph from '../components/BarGraph';
 import jsPDF from "jspdf";

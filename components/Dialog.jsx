@@ -4,7 +4,7 @@ const ConfirmContext = createContext();
 
 export const useConfirm = () => useContext(ConfirmContext);
 
-export const ConfirmDialogProvider = ({ children }) => {
+export const Dialog = ({ children }) => {
   const [question, setQuestion] = useState("");
   const [open, setOpen] = useState(false);
   const [resolveCallback, setResolveCallback] = useState(null);

@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { verify } from "jsonwebtoken";
 import { jwtDecode } from "jwt-decode";
 import Cookie from "js-cookie";
-import { ConfirmDialogProvider } from "./dashboard/components/Dialog";
+import { Dialog } from "../../components/Dialog";
 
 const PUBLIC_ROUTES = ["/", "/login", "/register"];
 
@@ -49,9 +49,9 @@ export default function App({ Component, pageProps }) {
   return (
     <>
       <ToastContainer />
-      <ConfirmDialogProvider>
+      <Dialog>
         {authorized && <Component {...pageProps} user={user} />}
-      </ConfirmDialogProvider>
+      </Dialog>
     </>
   );
 }
