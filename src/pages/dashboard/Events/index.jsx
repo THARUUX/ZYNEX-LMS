@@ -174,8 +174,8 @@ export default function Events() {
                   </div>
                 </div>
               </div>
-              <div className="overflow-scroll">
-                <table className="min-w-full divide-y divide-gray-200">
+              <div className="overflow-y-scroll max-h-[70vh]">
+                <table className="min-w-full divide-y divide-gray-200 hidden sm:table">
                   <thead>
                     <tr>
                       <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Name</th>
@@ -220,6 +220,38 @@ export default function Events() {
                     )}
                   </tbody>
                 </table>
+
+                <div className="sm:hidden flex flex-col gap-2 max-h-[70vh] overflow-y-scroll">
+                  {filteredEvents.length === 0 ? (
+                    <div className="text-center py-2">No events found</div>
+                  ) : (
+                    filteredEvents.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).map((c) => (
+                      <div
+                        key={c.id}
+                        onClick={() => router.push(`/dashboard/Events/${c.id}`)}
+                        className={c.status === "done" ? "bg-green-200 duration-300 flex hover:bg-green-50 cursor-pointer p-4 rounded-lg" : "bg-blue-50 flex duration-300 hover:bg-blue-100 cursor-pointer p-4 rounded-lg"}
+                      >
+                        <div className="grow">
+                          <div className="text-md sm:text-sm ">{c.title}</div>
+                          <div className="text-xs text-black/50 sm:text-sm">Starting Date: {c.date.split("T")[0]}</div>
+                          <div className="text-xs text-black/50 sm:text-sm">Deadline: {c.deadline.split("T")[0]}</div>
+                        </div>
+                        <div className="px-5">
+                          <button
+                            className="cursor-pointer mt-2"
+                            type="button"
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              updateEventStatus(c.id, c.status === "done" ? "pending" : "done"); // Toggle status
+                            }}
+                          >
+                            {c.status === "done" ? "✅" : "❌"}
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>

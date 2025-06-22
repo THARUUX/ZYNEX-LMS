@@ -334,7 +334,7 @@ export default function Class() {
                             Save Attendance
                         </button>
                     </div>
-                    <div className='sm:w-2/5 py-10 shadow-lg rounded max-h-[100vh] sm:max-h-[50vh]'>
+                    <div className='sm:w-2/5 py-10 px-5 shadow-lg rounded max-h-[100vh] flex flex-col justify-between'>
                         <div className='w-full text-center uppercase'>Student Attendance Report</div>
 
                         <PieChartComponent data={attendanceData} />
@@ -344,8 +344,8 @@ export default function Class() {
                             } else {
                                 alert("No attendance to download.");
                             }}
-                            } className='py-2 px-3 bg-slate-200 flex gap-5 cursor-pointer justify-center items-center'>
-                                Download PDF
+                            } className='py-2 px-3 bg-slate-200 rounded flex gap-5 cursor-pointer justify-center items-center'>
+                                Download Report
                             <FaDownload />
                         </div>
                     </div>

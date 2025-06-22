@@ -190,7 +190,13 @@ export default function EventPage() {
             `${c.score}%`,
             c.date,
         ]);
-        console.log(tableRows)
+        //console.log(tableRows)
+
+        doc.setFontSize(16);
+        doc.text(`${event?.title}`, 14, 15);
+
+        doc.setFontSize(10);
+        doc.text(`Event Date: ${event?.date?.split("T")[0]} - Deadline: ${event?.deadline?.split("T")[0]}`, 14, 25);
 
         autoTable(doc, {
             head: [tableColumn],
@@ -198,10 +204,27 @@ export default function EventPage() {
             styles: { fontSize: 10 },
             theme: "striped",
             headStyles: { fillColor: [52, 73, 94] },
-            margin: { top: 20 },
+            margin: { top: 35 },
+            didDrawPage: (data) => {
+                // Add footer
+                const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+                doc.setFontSize(8);
+                doc.text(
+                    `Page ${doc.internal.getNumberOfPages()}`, 
+                    data.settings.margin.left, 
+                    pageHeight - 10
+                );
+
+                doc.text(
+                    "ZYNEX LMS | lms.zynex.info", 
+                    doc.internal.pageSize.getWidth() - data.settings.margin.right, 
+                    pageHeight - 10,
+                    { align: "right" }
+                );
+            }
         });
 
-        doc.save("scores-table.pdf");
+        doc.save(`${event?.title}-scores.pdf`);
     };
 
     useEffect(() => {

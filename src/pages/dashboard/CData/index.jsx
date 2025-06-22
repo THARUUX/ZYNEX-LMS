@@ -70,19 +70,43 @@ export default function Index() {
 
 
   const addClassType = async () => {
-    if (!newClassType.trim()) return;
-    const res = await fetch("/api/classesTypes/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newClassType }),
-    });
+  if (!newClassType.trim()) {
+    toast.warning("Please enter a class type name", { position: "top-center" });
+    return;
+  }
 
-    if (res.ok) {
-      toast.success("Class Type Added Successfully!" , {position: "top-center"});
-      setNewClassType("");
-      fetchClassTypes();
+  try {
+      setLoading(true);
+      const res = await fetch("/api/classTypes/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newClassType.trim() }),
+      });
+
+      let data = {};
+      const contentType = res.headers.get("content-type");
+
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        throw new Error("Invalid server response");
+      }
+
+      if (res.ok) {
+        toast.success("Class Type Added Successfully!", { position: "top-center" });
+        setNewClassType("");
+        fetchClassTypes();
+      } else {
+        toast.error(data.message || "Failed to add class type", { position: "top-center" });
+      }
+    } catch (error) {
+      toast.error("Error adding class type: " + error.message, { position: "top-center" });
+    } finally {
+      setLoading(false);
     }
   };
+
+
 
   const handleSearch = (e) => {
     const term = e.target.value.toLowerCase();
@@ -156,7 +180,7 @@ export default function Index() {
 
   return (
     <Layout>
-      <div className="sm:p-5">
+      <div className="sm:p-5 pb-5">
         <h1 className="text-xl sm:text-3xl text-slate-900 px-5">Classes Data</h1>
 
         <div className="w-full flex flex-col sm:flex-row my-5 max-h-screen overflow-y-scroll min-h-2/3">
@@ -176,7 +200,7 @@ export default function Index() {
                 Add
               </button>
             </div>
-            <div className="py-8">
+            <div className="py-8 max-h-50vh overflow-y-scroll">
               <h2 className="sm:text-xl">Class Types</h2>
               <table className="sm:min-w-2/3 min-w-full divide-y divide-gray-200">
                 <thead>
@@ -250,40 +274,43 @@ export default function Index() {
                 <input type="search" className="grow" placeholder="Search" value={filterText} onChange={(e) => setFilterText(e.target.value)}/>
               </label>
 
-              <table className="min-w-2/3 divide-y divide-gray-200 max-h-screen overflow-y-scroll">
-                  <thead>
-                      <tr>
-                          <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Class Name</th>
-                          <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Assigned Students</th>
-                          <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Action</th>
-                      </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                      {searchedStudents.length === 0 ? (
-                          <tr>
-                              <td colSpan="3" className="text-center py-2">No students found</td>
-                          </tr>
-                      ) : (
-                          searchedStudents.map((entry) => {
-                              return (
-                                  <tr key={`${entry.class_id}-${entry.student_id}`} className="hover:bg-gray-100">
-                                      <td className="px-6 py-4 text-sm text-gray-800">{entry.class_name}</td>
-                                      <td className="px-6 py-4 text-sm text-gray-800">{entry.student_name}</td>
-                                      <td className="px-6 py-4 text-sm text-gray-800">
-                                          <button
-                                              onClick={() => handleDelete(entry.id)}
-                                              className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800"
-                                          >
-                                              Remove
-                                          </button>
-                                      </td>
-                                  </tr>
-                              );
-                          })
-                      )}
-                  </tbody>
+              <div className="min-w-2/3 max-h-[50vh] overflow-y-scroll">
+                <table className=" divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Class Name</th>
+                            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Assigned Students</th>
+                            <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                        {searchedStudents.length === 0 ? (
+                            <tr>
+                                <td colSpan="3" className="text-center py-2">No students found</td>
+                            </tr>
+                        ) : (
+                            searchedStudents.map((entry) => {
+                                return (
+                                    <tr key={`${entry.class_id}-${entry.student_id}`} className="hover:bg-gray-100">
+                                        <td className="px-6 py-4 text-sm text-gray-800">{entry.class_name}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-800">{entry.student_name}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-800">
+                                            <button
+                                                onClick={() => handleDelete(entry.id)}
+                                                className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800"
+                                            >
+                                                Remove
+                                            </button>
+                                        </td>
+                                    </tr>
+                                );
+                            })
+                        )}
+                    </tbody>
 
-              </table>
+                </table>
+              </div>
+
           </div>
           </div>
 

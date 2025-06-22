@@ -201,7 +201,7 @@ export default function students() {
           </form>
         </div>
 
-        <div className="p-5">
+        <div className="sm:p-5">
           <h1 className="sm:text-xl text-slate-900">Students List</h1>
           
           {/* Search Bar */}
@@ -209,48 +209,66 @@ export default function students() {
             <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
             <input type="search" className="grow" placeholder="Search" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </label>
-          <div className="flex flex-col">
-            <div className="-m-1.5 overflow-x-auto">
-              <div className="p-1.5 min-w-full inline-block align-middle">
-                <div className="overflow-hidden">
-                  <table className="min-w-full divide-y divide-gray-200 max-h-screen overflow-y-scroll">
-                    <thead>
-                      <tr>
-                        <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Index</th>
-                        <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Name</th>
-                        <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Batch</th>
-                        <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Joined Date</th>
-                        <th scope="col" className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Action</th>
+          <div className="flex flex-col ">
+            <div className="overflow-hidden shadow-lg sm:max-h-[50vh] overflow-y-scroll hidden sm:flex">
+              <table className="min-w-full divide-y divide-gray-200 max-h-screen overflow-y-scroll">
+                <thead>
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Index</th>
+                    <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Name</th>
+                    <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Batch</th>
+                    <th scope="col" className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Joined Date</th>
+                    <th scope="col" className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 max-h-screen overflow-y-scroll">
+                  {filteredStudents.length === 0 ? (
+                    <tr>
+                      <td colSpan="4" className="text-center py-2">No students found</td>
+                    </tr>
+                  ) : (
+                    filteredStudents.map((student) => (
+                      <tr
+                        className={`hover:bg-gray-100 cursor-pointer ${!student.status ? "bg-gray-200 text-gray-500" : "text-gray-800"}`}
+                        key={student.id}
+                        onClick={() => router.push(`/dashboard/Students/${student.id}`)}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{student.id}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{student.name}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">{student.batch}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">{student.joined_date.split('T')[0]}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium flex gap-5">
+                          <button onClick={() => {fetchStudents(student.id)}}className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 focus:outline-hidden focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none">Edit</button>
+                          <button onClick={() => {handleDelete(student.id)}} className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800 focus:outline-hidden focus:text-red-800 disabled:opacity-50 disabled:pointer-events-none">Delete</button>
+                          <button onClick={() => {handleStatus(student.id)}} className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-yellow-600 hover:text-yellow-800 focus:outline-hidden focus:text-yellow-800 disabled:opacity-50 disabled:pointer-events-none">{student.status ? "Remove" : "Get"}</button>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200 max-h-screen overflow-y-scroll">
-                      {filteredStudents.length === 0 ? (
-                        <tr>
-                          <td colSpan="4" className="text-center py-2">No students found</td>
-                        </tr>
-                      ) : (
-                        filteredStudents.map((student) => (
-                          <tr
-                            className={`hover:bg-gray-100 cursor-pointer ${!student.status ? "bg-gray-200 text-gray-500" : "text-gray-800"}`}
-                            key={student.id}
-                            onClick={() => router.push(`/dashboard/Students/${student.id}`)}
-                          >
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{student.id}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{student.name}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">{student.batch}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">{student.joined_date.split('T')[0]}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium flex gap-5">
-                              <button onClick={() => {fetchStudents(student.id)}}className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 focus:outline-hidden focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none">Edit</button>
-                              <button onClick={() => {handleDelete(student.id)}} className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800 focus:outline-hidden focus:text-red-800 disabled:opacity-50 disabled:pointer-events-none">Delete</button>
-                              <button onClick={() => {handleStatus(student.id)}} className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-yellow-600 hover:text-yellow-800 focus:outline-hidden focus:text-yellow-800 disabled:opacity-50 disabled:pointer-events-none">{student.status ? "Remove" : "Get"}</button>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex sm:hidden flex-col gap-5 max-h-[70vh] overflow-y-scroll">
+              {filteredStudents.length === 0 ? (
+                <div className="text-center py-2">No students found</div>
+              ) : (
+                filteredStudents.map((student) => (
+                  <div
+                    key={student.id}
+                    className={`bg-white shadow-md gap-3 rounded-lg p-4 flex justify-between items-center cursor-pointer hover:bg-gray-100 ${!student.status ? "text-gray-500" : "text-gray-800"}`}
+                    onClick={() => router.push(`/dashboard/Students/${student.id}`)}
+                  >
+                    <div className="flex gap-3 flex-col w-full">
+                      <span className="font-medium text-xl">{student.name}</span>
+                      <div className="text-sm text-gray-500 w-full flex justify-between">
+                        <div className="font-medium">Index: {student.id}</div>
+                        <div className="font-medium">Batch: {student.batch}</div>
+                      </div>
+                  </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
