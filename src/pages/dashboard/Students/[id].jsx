@@ -239,7 +239,7 @@ export default function Student() {
         <div className='bg-white sm:mt-10 p-5 shadow-lg rounded-lg mt-5'>
           <div className='text-2xl mb-4'>Attendance Report</div>
           <div className=" space-y-4">
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-4 items-center flex-wrap">
               <input
                 type="date"
                 value={startDate}
