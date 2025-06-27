@@ -71,7 +71,7 @@ export default function Home() {
       <section className={`snap-start w-screen min-h-screen flex flex-col items-center bg-2 text-main py-20 sm:py-0`}>
           <div className="w-full min-h-screen flex flex-col  justify-center items-center">
             <div className="text-5xl sm:text-7xl text-center font-black text-main animate-fade">Welcome to <span className="bg-gradient-to-r from-blue-700 to-purple-500 bg-clip-text text-transparent">ZYNEX LMS</span></div>
-            <div className="flex flex-col sm:flex-row py-20 text-2xl gap-5 sm:gap-20">
+            <div className="flex flex-row flex-wrap justify-center sm:flex-row py-20 text-xl sm:text-2xl gap-5 sm:gap-20">
               <div className="flex gap-2 justify-center items-center cursor-pointer py-4 px-1 border-b border-0 text-center border-[#330063] text-[#330063] hover:text-[#3300ff] duration-300 hover:border-[#3300ff]"><AiFillHome /> Home 
               </div>
               <div className="flex gap-2 justify-center items-center cursor-pointer py-4 px-1 border-b border-0 text-center border-[#330063] text-[#330063] hover:text-[#3300ff] duration-300 hover:border-[#3300ff]"><SiGoogledocs /> Guide</div>
@@ -79,6 +79,7 @@ export default function Home() {
               <div className="flex gap-2 justify-center items-center cursor-pointer py-4 px-1 border-b border-0 text-center border-[#330063] text-[#330063] hover:text-[#3300ff] duration-300 hover:border-[#3300ff]"><FaPhone /> Contact</div>
               <div className="flex gap-2 justify-center items-center cursor-pointer py-4 px-1 border-b border-0 text-center border-[#330063] text-[#330063] hover:text-[#3300ff] duration-300 hover:border-[#3300ff]"><FaBuildingCircleCheck /> About</div>
             </div>
+            <div className="">Sepcially Developed for Dilshan Sir</div>
           </div>
           <div className="w-full min-h-screen flex flex-col pb-30 sm-pb-0 px-5 gap-10 sm:gap-0">
             <div className="flex w-full text-3xl sm:text-5xl justify-center font-black"  >Keep the first step</div>
