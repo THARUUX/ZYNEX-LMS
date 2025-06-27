@@ -3,6 +3,7 @@ import Layout from "../components/Layout";
 import Loading from "../../../../components/Loading";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import { MdDelete } from "react-icons/md";
 
 export default function Index() {
   const router = useRouter();
@@ -14,6 +15,8 @@ export default function Index() {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [message, setMessage] = useState("");
   const [assignedStudents, setAssignedStudents] = useState([]);
+  const [modal, setModal] = useState({ header: "", cont: "", func: null });
+
 
   const [isLoading, setLoading] = useState(true);
 
@@ -45,9 +48,17 @@ export default function Index() {
   };
 
   const fetchStudents = async () => {
-    const res = await fetch("/api/students");
-    const data = await res.json();
-    setStudents(data);
+    setLoading(true);
+    try {
+      const res = await fetch("/api/students");
+      const data = await res.json();
+      setStudents(data);
+    } catch (error) {
+      toast.error('Error! fetching students' , {position: "top-center"})
+      console.error("Error fetching students:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchAssignedStudents = async () => {
@@ -70,12 +81,12 @@ export default function Index() {
 
 
   const addClassType = async () => {
-  if (!newClassType.trim()) {
-    toast.warning("Please enter a class type name", { position: "top-center" });
-    return;
-  }
+    if (!newClassType.trim()) {
+      toast.warning("Please enter a class type name", { position: "top-center" });
+      return;
+    }
 
-  try {
+    try {
       setLoading(true);
       const res = await fetch("/api/classTypes/add", {
         method: "POST",
@@ -175,11 +186,65 @@ export default function Index() {
     }
   }
 
-  if (isLoading) return <Loading />
-  
+  const handleDeleteClass = (id) => {
+    if (!id) {
+      toast.error('Error!' , {position: "top-center"});
+      return;
+    }
+    setModal({
+      header: "Warning",
+      cont: "Are you sure you want to delete this class type? If this ID is used elsewhere, errors may occur.",
+      func: () => deleteItem(id),
+    });
+    document.getElementById("my_modal_5").showModal();
+  };
+
+  const deleteItem = async (id) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/classTypes/${id}` , {
+        method: "DELETE"
+      });
+
+      if(!res.ok){
+        toast.error('Error!' , {position: "top-center"})
+      } 
+    } catch (error) {
+      if(alertRef.current){
+        toast.error('Error!' , {position: "top-center"})
+      }
+    } finally {
+      fetchClassTypes();
+      setLoading(false);
+      toast.success('Student deleted.' , {position: "top-center"})
+    }
+  }  
 
   return (
-    <Layout>
+    <Layout isLoading={isLoading} title="Classes Data">
+
+      <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box bg-white">
+          <h3 className="font-bold text-lg">{modal.header}</h3>
+          <p className="py-4">{modal.cont}</p>
+          <div className="modal-action">
+            <form className="flex gap-5" method="dialog">
+              <button onClick={() => {document.getElementById("my_modal_5").close();}} className="btn">No</button>
+              <button
+                type="button"
+                onClick={() => {
+                  modal.func(); // Trigger the function passed in the modal state
+                  document.getElementById("my_modal_5").close(); // Close the modal
+                }}
+                className="bg-red-600 btn"
+              >
+                Yes
+              </button>
+            </form>
+          </div>
+        </div>
+      </dialog>
+
       <div className="sm:p-5 pb-5">
         <h1 className="text-xl sm:text-3xl text-slate-900 px-5">Classes Data</h1>
 
@@ -207,6 +272,7 @@ export default function Index() {
                   <tr>
                     <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Class ID</th>
                     <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Class Name</th>
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -216,9 +282,20 @@ export default function Index() {
                     </tr>
                   ) : (
                     classTypes.map((entry) => (
-                      <tr key={entry.id} onClick={() => router.push(`/dashboard/CData/${entry.id}`)} className="hover:bg-gray-100">
+                      <tr key={entry.id} onClick={() => router.push(`/dashboard/CData/${entry.id}`)} className="hover:bg-gray-100 cursor-pointer">
                         <td className="px-6 py-4 text-sm text-gray-800">{entry.id}</td>
                         <td className="px-6 py-4 text-sm text-gray-800">{entry.name}</td>
+                        <td className="px-6 py-4 text-sm text-gray-800">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent row click event
+                              handleDeleteClass(entry.id);
+                            }}
+                            className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800"
+                          >
+                            <MdDelete className="text-lg" />
+                          </button>
+                        </td>
                       </tr>
                     ))
                   )}

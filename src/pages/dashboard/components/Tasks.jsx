@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Loading from '../../../../components/Loading';
 import { toast } from 'react-toastify';
+import { FaDownload } from 'react-icons/fa';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function Tasks({id}) {
     const [isLoading, setLoading] = useState(true);
@@ -89,6 +92,43 @@ export default function Tasks({id}) {
         }
     };
 
+    const downloadTaskList = (taskList) => {
+        const doc = new jsPDF();
+        const tableColumn = ["Task No.", "Task"];
+        const tableRows = taskList.map((t, index) => [
+            index + 1,
+            t.task_name,
+        ]);
+        doc.setFontSize(16);
+        doc.text(`Task List`, 14, 15);
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            styles: { fontSize: 10 },
+            theme: "striped",
+            headStyles: { fillColor: [52, 73, 94] },
+            margin: { top: 25 },
+            didDrawPage: (data) => {
+                // Add footer
+                const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+                doc.setFontSize(8);
+                doc.text(
+                    `Page ${doc.internal.getNumberOfPages()}`, 
+                    data.settings.margin.left, 
+                    pageHeight - 10
+                );
+
+                doc.text(
+                    "ZYNEX LMS | lms.zynex.info", 
+                    doc.internal.pageSize.getWidth() - data.settings.margin.right, 
+                    pageHeight - 10,
+                    { align: "right" }
+                );
+            }
+        });
+        doc.save(`task-list-${id}.pdf`);
+    };
+
     if (isLoading) return <Loading />;
 
     return (
@@ -105,6 +145,16 @@ export default function Tasks({id}) {
                 <button onClick={addTask} className="bg-slate-800 text-white px-4 py-2 rounded cursor-pointer">
                     Add
                 </button>
+            </div>
+            <div onClick={() => {
+                if (tasks && tasks.length > 0) {
+                    downloadTaskList(tasks);
+                } else {
+                    alert("No students to download.");
+                }}
+                } className='py-2 px-3 bg-slate-200 mt-4 flex gap-5 cursor-pointer justify-center items-center'>
+                    Download Tasks List
+                <FaDownload />
             </div>
             <div className="mt-4">
                 <table className="w-full min-w-full divide-y divide-gray-200 ">

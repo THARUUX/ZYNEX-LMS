@@ -8,6 +8,10 @@ import { toast } from 'react-toastify';
 import AreaChartComp from '../components/AreaChartComp';
 import PieChartComponent from '../components/PieChart';
 import { BsFilter } from 'react-icons/bs';
+import { FaCrown, FaMedal } from "react-icons/fa6";
+import { FaPenNib } from "react-icons/fa";
+import { GiStarMedal } from "react-icons/gi";
+import { IoBarChart } from 'react-icons/io5';
 
 export default function Student() {
   //const alertRef = useRef(null);
@@ -27,6 +31,8 @@ export default function Student() {
   const [pieData, setPieData] = useState([]);
   const [startDate, setStartDate] = useState("2025-01-01");
   const [endDate, setEndDate] = useState("2025-12-31");
+
+  const [stats , setStats] = useState([]);
 
   const fetchStudent = async () => {
     setLoading(true);
@@ -62,6 +68,7 @@ export default function Student() {
       const data = await res.json();
       setAllScores(data);
       setFilteredScores(data);
+      
     } catch (err) {
       console.error("Error fetching scores:", err);
     } finally {
@@ -69,8 +76,25 @@ export default function Student() {
     }
   };
 
+  const fetchAllScores = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/score`);
+      const data = await res.json();
+      const statsdata = getStudentStats(id, data); // Fetch student stats
+      setStats(statsdata);
+      setLoading(false);
+    } catch (error) {
+      toast.error(error.message || 'An error occurred while fetching scores', {
+        position: "top-center"
+      });
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchScore();
+    fetchAllScores();
   }, [id]);
 
   useEffect(() => {
@@ -172,12 +196,78 @@ export default function Student() {
     }
   }, [id]);
 
+
+  function getStudentStats(studentId, allScores) {
+    console.log("All Scores:", allScores);
+    const studentScores = allScores.filter(s => s.student_id == studentId);
+
+    if (studentScores.length === 0) {
+      return {
+        student_id: studentId,
+        events_participated: 0,
+        first_place_count: 0,
+        second_place_count: 0,
+        third_place_count: 0,
+        best_score: 0,
+        best_score_event_id: null,
+        average_score: 0,
+      };
+    }
+
+    const eventsFocused = new Set();
+    let bestScore = -1;
+    let bestScoreEventId = null;
+    let totalScore = 0;
+
+    let firstPlace = 0;
+    let secondPlace = 0;
+    let thirdPlace = 0;
+
+    for (const record of studentScores) {
+      const { type_id, score } = record;
+
+      eventsFocused.add(type_id);
+      totalScore += score;
+
+      if (score > bestScore) {
+        bestScore = score;
+        bestScoreEventId = type_id;
+      }
+
+      const scoresInEvent = allScores
+        .filter(s => s.type_id === type_id)
+        .sort((a, b) => b.score - a.score);
+
+      for (let i = 0; i < scoresInEvent.length; i++) {
+        if (scoresInEvent[i].student_id == studentId) {
+          if (i === 0) firstPlace++;
+          else if (i === 1) secondPlace++;
+          else if (i === 2) thirdPlace++;
+          break;
+        }
+      }
+    }
+
+    const averageScore = +(totalScore / studentScores.length).toFixed(2);
+
+    return {
+      student_id: studentId,
+      events_participated: eventsFocused.size,
+      first_place_count: firstPlace,
+      second_place_count: secondPlace,
+      third_place_count: thirdPlace,
+      best_score: bestScore,
+      best_score_event_id: bestScoreEventId,
+      average_score: averageScore,
+    };
+  }
+
   
 
-  if (isLoading) return <Loading />;
+  
 
   return (
-    <Layout>
+    <Layout isLoading={isLoading} title="Student Details">
       <div className="px-5 sm:px-10 py-5">
         <div className="w-full py-3 flex justify-between">
           <div className='tracking-wider text-3xl text-slate-900'>
@@ -188,7 +278,7 @@ export default function Student() {
           </div>
         </div>
 
-        <div className='flex flex-col sm:flex-row gap-5 justify-between items-center mt-5'>
+        <div className='flex flex-col sm:flex-row gap-5  flex-wrap  mt-5'>
           <div className=' bg-white text-slate-800 p-5 rounded-lg w-full sm:w-fit shadow-lg cursor-pointer duration-300 hover:scale-105'>
             <div className='text-xl border-b pb-5 font-bold px-10'>Assigned Classes</div>
             <div className=' flex flex-col gap-2 mt-3'>
@@ -202,6 +292,44 @@ export default function Student() {
                 ))
               )}
             </div>
+          </div>
+
+          <div className=' bg-blue-100 text-slate-800 p-5 gap-5 rounded-lg w-full flex flex-col justify-center sm:w-54 shadow-lg cursor-pointer sm:h-52 duration-300 hover:scale-105'>
+            <div className=' flex flex-col gap-2 text-5xl justify-center items-center'>
+              {stats.events_participated > 0 ? (
+                <div className="w-fit py-2 px-3 duration-300 relative left-0 hover:translate-x-2">
+                  {stats.events_participated}
+                </div>
+              ) : (
+                <div>0</div>
+              )}
+            </div>
+            <div className='w-full text-center flex gap-3 items-center justify-center uppercase'> <FaPenNib className='text-xl' /> Focused Events</div>
+          </div>
+
+          <div className=' bg-lime-50 text-slate-800 p-5 gap-5 rounded-lg w-full flex flex-col justify-center sm:w-54 shadow-lg cursor-pointer sm:h-52 duration-300 hover:scale-105'>
+            <div className='flex flex-col gap-2 text-sm justify-center items-center'>
+              <div className='text-xl text-orange-300 font-bold flex items-center gap-2'><FaMedal/>First Place: {stats.first_place_count > 0 ? stats.first_place_count : "0"}</div>
+              <div className='text-lg text-gray-500 flex items-center gap-2'><FaMedal/> Second Place: {stats.second_place_count > 0 ? stats.second_place_count : "0"}</div>
+              <div className='text-lg text-amber-800 flex items-center gap-2'><FaMedal/> Third Place: {stats.third_place_count > 0 ? stats.third_place_count : "0"}</div>
+            </div>
+            <div className='w-full text-center flex gap-3 items-center justify-center uppercase'><GiStarMedal className='text-xl' />Rankings</div>
+          </div>
+
+
+          <div className=' bg-green-100 text-slate-800 p-5 gap-5 rounded-lg w-full flex flex-col justify-center sm:w-54 shadow-lg cursor-pointer sm:h-52 duration-300 hover:scale-105'>
+            <div className='flex flex-col gap-2  text-5xl justify-center items-center'>
+              {stats.best_score > 0 ? `${stats.best_score}%` : "0%"}
+            </div>
+            <div className='w-full text-center flex gap-3 items-center justify-center uppercase'><FaCrown className='text-2xl' />Highest</div>
+          </div>
+
+
+          <div className=' bg-cyan-100 text-slate-800 p-5 gap-5 rounded-lg w-full flex flex-col justify-center sm:w-54 shadow-lg cursor-pointer sm:h-52 duration-300 hover:scale-105'>
+            <div className='flex flex-col gap-2  text-5xl justify-center items-center'>
+              {stats.average_score > 0 ? `${stats.average_score}%` : "0%"}
+            </div>
+            <div className='w-full text-center flex gap-3 items-center justify-center uppercase'><IoBarChart className='text-2xl' />Avarage</div>
           </div>
         </div>
         
@@ -259,7 +387,9 @@ export default function Student() {
                 Filter <BsFilter />
               </button>
             </div>
-            <PieChartComponent data={pieData} />
+            <div className='flex w-full justify-center items-center overflow-scroll'>
+                <PieChartComponent data={pieData} />
+            </div>
           </div>
         </div>
       </div>

@@ -3,6 +3,9 @@ import { useRouter } from "next/router";
 import Layout from "../components/Layout";
 import Loading from "../../../../components/Loading";
 import { toast } from "react-toastify";
+import { MdDelete } from "react-icons/md";
+import { FaEdit } from "react-icons/fa";
+import { IoRemove } from "react-icons/io5";
 
 export default function students() {
   const router = useRouter();
@@ -238,9 +241,33 @@ export default function students() {
                         <td className="px-6 py-4 whitespace-nowrap text-sm">{student.batch}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">{student.joined_date.split('T')[0]}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium flex gap-5">
-                          <button onClick={() => {fetchStudents(student.id)}}className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 focus:outline-hidden focus:text-blue-800 disabled:opacity-50 disabled:pointer-events-none">Edit</button>
-                          <button onClick={() => {handleDelete(student.id)}} className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800 focus:outline-hidden focus:text-red-800 disabled:opacity-50 disabled:pointer-events-none">Delete</button>
-                          <button onClick={() => {handleStatus(student.id)}} className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-yellow-600 hover:text-yellow-800 focus:outline-hidden focus:text-yellow-800 disabled:opacity-50 disabled:pointer-events-none">{student.status ? "Remove" : "Get"}</button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              fetchStudents(student.id);
+                            }}
+                            className="inline-flex items-center gap-x-2 text-lg font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800"
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(student.id);
+                            }}
+                            className="inline-flex items-center gap-x-2 text-lg font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800"
+                          >
+                            <MdDelete />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleStatus(student.id);
+                            }}
+                            className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-yellow-600 hover:text-yellow-800"
+                          >
+                            {student.status ? "Remove" : "Get"}
+                          </button>
                         </td>
                       </tr>
                     ))

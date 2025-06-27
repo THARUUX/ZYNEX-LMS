@@ -2,11 +2,11 @@ import { pool } from "../../../../lib/db";
 
 export default async function handler(req, res) {
     if (req.method === "GET") {
+        let connection;
         try {
-            // Query the database to get all class types, ordered by ID
-            const [students] = await pool.query("SELECT * FROM class_types ORDER BY id");
+            connection = await pool.getConnection();
+            const [students] = await connection.query("SELECT * FROM class_types ORDER BY id");
 
-            // Check if no records are returned
             if (students.length === 0) {
                 return res.status(404).json({ message: "No class types found" });
             }
@@ -15,6 +15,8 @@ export default async function handler(req, res) {
         } catch (error) {
             console.error("Database error:", error);
             res.status(500).json({ message: "Database error", error: error.message });
+        } finally {
+            if (connection) connection.release(); // Safely release
         }
     } else {
         res.status(405).json({ message: "Method not allowed" });
