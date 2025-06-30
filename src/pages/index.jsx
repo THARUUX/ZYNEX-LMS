@@ -79,7 +79,7 @@ export default function Home() {
               <div className="flex gap-2 justify-center items-center cursor-pointer py-4 px-1 border-b border-0 text-center border-[#330063] text-[#330063] hover:text-[#3300ff] duration-300 hover:border-[#3300ff]"><FaPhone /> Contact</div>
               <div className="flex gap-2 justify-center items-center cursor-pointer py-4 px-1 border-b border-0 text-center border-[#330063] text-[#330063] hover:text-[#3300ff] duration-300 hover:border-[#3300ff]"><FaBuildingCircleCheck /> About</div>
             </div>
-            <div className="">Sepcially Developed for Dilshan Sir</div>
+            <div className="">Specially Developed for Dilshan Sir</div>
           </div>
           <div className="w-full min-h-screen flex flex-col pb-30 sm-pb-0 px-5 gap-10 sm:gap-0">
             <div className="flex w-full text-3xl sm:text-5xl justify-center font-black"  >Keep the first step</div>
