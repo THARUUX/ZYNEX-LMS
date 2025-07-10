@@ -15,6 +15,7 @@ import { toast } from 'react-toastify';
 import { RiFileList2Fill } from 'react-icons/ri';
 import { FaUsers } from 'react-icons/fa';
 import { MdPending } from 'react-icons/md';
+import { Router, useRouter } from 'next/router';
 
 
 export default function index({user}) {
@@ -25,6 +26,8 @@ export default function index({user}) {
   const [selectedClassType, setSelectedClassType] = useState('');
   const [students, setStudents] = useState('');
   const [classTypes, setClassTypes] = useState([]);
+
+  const router = useRouter();
 
   const fetchClasses = async () => {
     setLoading(true);
@@ -190,14 +193,14 @@ export default function index({user}) {
                   <Line
                     type="monotone"
                     dataKey="Present"
-                    stroke="#00C49F"
+                    stroke="#333344"
                     strokeWidth={3}
                     animationDuration={1000}
                   />
                   <Line
                     type="monotone"
                     dataKey="Absent"
-                    stroke="#FF8042"
+                    stroke="#FF5050"
                     strokeWidth={3}
                     animationDuration={1000}
                   />
@@ -207,15 +210,15 @@ export default function index({user}) {
           </div>
         </div>
         <div className='w-full flex flex-wrap gap-10 py-10'>
-          <div className="w-full sm:w-52 flex bg-green-100 text-slate-800 flex-col justify-center gap-5 sm:aspect-square rounded-lg items-center py-10 px-5 shadow-lg cursor-pointer">
+          <div onClick={() => router.push('/dashboard/Classes')} className="w-full sm:w-52 flex bg-green-100 text-slate-800 flex-col justify-center gap-5 sm:aspect-square rounded-lg items-center py-10 px-5 shadow-lg cursor-pointer">
             <div className='text-5xl w-full text-center'>{classTypes.length > 0 ? classTypes.filter((cls) => cls.status !== false).length : "0"}</div>
             <div className='text-center font-bold flex gap-3'><RiFileList2Fill className='text-2xl'/>Classes</div>
           </div>
-          <div className="w-full sm:w-52 flex bg-blue-100 text-slate-800 flex-col justify-center gap-5 sm:aspect-square rounded-lg items-center py-10 px-5 shadow-lg cursor-pointer">
+          <div onClick={() => router.push('/dashboard/Students')} className="w-full sm:w-52 flex bg-blue-100 text-slate-800 flex-col justify-center gap-5 sm:aspect-square rounded-lg items-center py-10 px-5 shadow-lg cursor-pointer">
             <div className='text-5xl w-full text-center'>{students.length > 0 ? students.length : "0"}</div>
             <div className='text-center font-bold flex gap-3'><FaUsers className='text-2xl'/>Students</div>
           </div>
-          <div className="w-full sm:w-52 flex bg-red-100 text-slate-800 flex-col justify-center gap-5 sm:aspect-square rounded-lg items-center py-10 px-5 shadow-lg cursor-pointer">
+          <div onClick={() => router.push('/dashboard/Classes')} className="w-full sm:w-52 flex bg-red-100 text-slate-800 flex-col justify-center gap-5 sm:aspect-square rounded-lg items-center py-10 px-5 shadow-lg cursor-pointer">
             <div className='text-5xl w-full text-center'>{classes.length > 0 ? classes.filter((cls) => cls.status === 'false').length : "0"}</div>
             <div className='text-center font-bold flex gap-3'><MdPending className='text-2xl'/>Pending Classes</div>
           </div>

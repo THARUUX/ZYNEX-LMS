@@ -8,6 +8,9 @@ import { FaDownload } from "react-icons/fa";
 import BarGraph from '../components/BarGraph';
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { FaCrown } from "react-icons/fa6";
+import { FaMedal } from "react-icons/fa";
+import { PiMedalFill } from "react-icons/pi";
 
 export default function EventPage() {
     const router = useRouter();
@@ -33,6 +36,8 @@ export default function EventPage() {
     });
     const [scores , setScores] = useState([]);
     const [reportData , setReportData] = useState([]);
+    const [topThree, setTopThree] = useState([]);
+
 
     const fetchEvent = async () => {
         if (!id) return;
@@ -171,6 +176,9 @@ export default function EventPage() {
                 const data = await res.json();
                 console.log('Scores' , data);
                 setScores(data);
+                const sorted = [...data].sort((a, b) => b.score - a.score);
+                const top3 = sorted.slice(0, 3); 
+                setTopThree(top3);
             } else {
                 toast.error("Error fetching scores from database", { position: "top-center" });
             }
@@ -414,8 +422,19 @@ export default function EventPage() {
                             </table>
                         </div>
                     </div>
-                    <div className="w-full hidden sm:flex sm:w-1/2">
+                    <div className="w-full hidden sm:flex items-center justify-center sm:w-1/2">
                         <BarGraph data={reportData} />
+                    </div>
+                </div>
+
+                <div className='flex p-5'>
+                    <div className='w-full sm:w-2/5 bg-green-100 flex justify-center items-start p-10 rounded-lg shadow-lg flex-col gap-5'>
+                    <table>
+                        
+                    </table>
+                        <div className='flex gap-3 text-xl items-center text-yellow-600'><FaCrown className='text-3xl text-yellow-500' /> <div>1st</div> {topThree?.[0]?.student_name || '-'} <div>{topThree?.[0]?.score || '-'}%</div></div>
+                        <div className='flex gap-3 text-lg items-center text-gray-500'><FaMedal className='text-2xl text-gray-500'/> <div>2nd</div> {topThree?.[1]?.student_name || '-'} <div>{topThree?.[1]?.score || '-'}%</div></div>
+                        <div className='flex gap-3 items-center text-amber-700'><PiMedalFill className='text-2xl text-amber-700'/> <div>3rd</div> {topThree?.[2]?.student_name || '-'} <div>{topThree?.[2]?.score || '-'}%</div></div>
                     </div>
                 </div>
             </div>
