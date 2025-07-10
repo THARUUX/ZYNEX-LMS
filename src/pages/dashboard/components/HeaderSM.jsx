@@ -49,11 +49,16 @@ export default function HeaderSM({user}) {
                 <IoClose/>
             </div>
         </div>
+
+        <div
+        className={`fixed w-screen h-screen backdrop-blur-[2px] bg-black/5 duration-300 z-40 transition-opacity ${nav ? 'opacity-100 pointer-events-auto' : "opacity-0 pointer-events-none"}`}
+        onClick={() => setNav(false)}
+        ></div>
         
         <div className={`h-screen flex flex-col gap-3 pt-5 px-5 z-50 bg-slate-50 fixed top-0 left-0 shadow-2xl ${nav ? 'w-3/5 pb-10 opacity-100' : 'w-0 opacity-0'}  overflow-hidden duration-300`}>
             <div className="w-full flex flex-col justify-center items-center gap-3 pb-3">
                 <FaUserCircle className='text-7xl'/>
-                <div className='text-lg uppercase'>{uname}</div>
+                <div className='text-lg uppercase'>{uname.split(" ")[0]}</div>
             </div>
             <Link href={'/dashboard/'} className={tab === 'dashboard' ? active : deactive}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill={tab === 'dashboard' ? "white" : "black"} viewBox="0 0 24 24" id="dashboard">

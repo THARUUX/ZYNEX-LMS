@@ -100,12 +100,12 @@ export default function Events() {
     return (
         <Layout isLoading={isLoading}>
           <div className="p-5">
-            <div className="w-full tracking-wider sm:px-5 py-3 text-xl sm:text-3xl text-slate-900">
+            <div className="w-full tracking-wider py-3 text-xl sm:text-3xl text-slate-900">
               Event Management
             </div>
             <div className="w-full flex flex-col py-5">
-              <div className="sm:text-xl sm:pl-5 mb-2">Schedule an event</div>
-              <form onSubmit={handleSubmit} className="flex sm:flex-row w-full sm:px-5 items-end flex-wrap gap-4 justify-between sm:justify-normal">
+              <div className="sm:text-xl  mb-2">Schedule an event</div>
+              <form onSubmit={handleSubmit} className="flex sm:flex-row w-full  items-end flex-wrap gap-4 justify-between sm:justify-normal">
                 <div className="flex w-full sm:w-1/3 gap-2">
                   <div className="grow-1 sm:max-w-full">
                     <label htmlFor="type">Event name</label> 
@@ -115,6 +115,7 @@ export default function Events() {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
+                      placeholder="Enter event name"
                       className="py-2.5 px-4 block w-full border-gray-200 rounded sm:text-sm bg-slate-100 focus:outline-none"
                       required
                     />
@@ -152,11 +153,11 @@ export default function Events() {
               </form>
             </div>
 
-            <div className="sm:p-5 mt-5 sm:mt-0">
+            <div className="mt-5 sm:mt-0">
               <div className="flex flex-col sm:flex-row justify-between items-center">
-                <h1 className="text-xl text-slate-900 w-full sm:w-auto">Event List</h1>          
-                <div className="my-4">
-                  <div className="flex gap-4 sm:my-4">
+                <h1 className="text-xl text-slate-900 w-full ">Event List</h1>          
+                <div className="my-4 w-full justify-end">
+                  <div className="flex gap-4 w-full justify-end">
                     {/* Date Filter */}
                     <div className="flex flex-col relative  text-sm">
                       <input

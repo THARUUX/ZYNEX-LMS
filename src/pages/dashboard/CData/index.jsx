@@ -3,7 +3,7 @@ import Layout from "../components/Layout";
 import Loading from "../../../../components/Loading";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 
 export default function Index() {
   const router = useRouter();
@@ -245,15 +245,15 @@ export default function Index() {
         </div>
       </dialog>
 
-      <div className="sm:p-5 pb-5">
-        <h1 className="text-xl sm:text-3xl text-slate-900 px-5">Classes Data</h1>
+      <div className="p-5">
+        <h1 className="text-xl sm:text-3xl text-slate-900 ">Classes Data</h1>
 
-        <div className="w-full flex flex-col sm:flex-row my-5 max-h-screen overflow-y-scroll min-h-2/3">
+        <div className="w-full flex flex-col my-5 min-h-2/3">
           {/* Add Class Type */}
-          <div className="p-5 w-full sm:w-1/2 flex flex-col">
+          <div className="w-full flex flex-col">
             <h2 className=" sm:text-xl">Add Class Type</h2>
             {message && <p className="text-green-600">{message}</p>}
-            <div className="flex gap-2 mt-3 sm:w-2/3">
+            <div className="flex gap-2 mt-3 sm:w-1/3">
               <input
                 type="text"
                 value={newClassType}
@@ -267,7 +267,7 @@ export default function Index() {
             </div>
             <div className="py-8 max-h-50vh overflow-y-scroll">
               <h2 className="sm:text-xl">Class Types</h2>
-              <table className="sm:min-w-2/3 min-w-full divide-y divide-gray-200">
+              <table className="min-w-full divide-y divide-gray-200">
                 <thead>
                   <tr>
                     <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Class ID</th>
@@ -285,7 +285,7 @@ export default function Index() {
                       <tr key={entry.id} onClick={() => router.push(`/dashboard/CData/${entry.id}`)} className="hover:bg-gray-100 cursor-pointer">
                         <td className="px-6 py-4 text-sm text-gray-800">{entry.id}</td>
                         <td className="px-6 py-4 text-sm text-gray-800">{entry.name}</td>
-                        <td className="px-6 py-4 text-sm text-gray-800">
+                        <td className="px-6 py-4 text-sm text-gray-800 flex gap-3">
                           <button
                             onClick={(e) => {
                               e.stopPropagation(); // Prevent row click event
@@ -294,6 +294,14 @@ export default function Index() {
                             className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-red-600 hover:text-red-800"
                           >
                             <MdDelete className="text-lg" />
+                          </button>
+                          <button
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent row click event
+                            router.push(`/dashboard/CData/${entry.id}`);
+                          }}
+                             className="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800">
+                            <MdEdit className="text-lg text-blue-600 hover:text-blue-800" />
                           </button>
                         </td>
                       </tr>
@@ -305,9 +313,9 @@ export default function Index() {
           </div>
 
           {/* Assign Students to Classes */}
-          <div className="p-5 sm:w-1/2">
+          <div className="">
             <h2 className="sm:text-xl">Assign Students to Class</h2>
-            <div className="flex flex-wrap gap-2 mt-3 sm:w-2/3">
+            <div className="flex flex-wrap gap-2 mt-3 sm:w-1/3">
               <div className="relative w-full">
                 <input
                   type="text"
@@ -343,16 +351,16 @@ export default function Index() {
               </button>
             </div>
             {/* Display Assigned Students */}
-            <div className="py-8">
-              <h2 className="sm:text-xl">Assigned Students</h2>
-
-              <label className="input bg-transparent shadow my-5 w-full sm:w-2/3">
-                <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
-                <input type="search" className="grow" placeholder="Search" value={filterText} onChange={(e) => setFilterText(e.target.value)}/>
-              </label>
+            <div className="py-0">
+              <div className="flex sm:items-center justify-center sm:justify-between flex-col sm:flex-row gap-2 my-5">
+                <label className="input bg-transparent shadow w-full sm:w-1/3">
+                  <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
+                  <input type="search" className="grow" placeholder="Search" value={filterText} onChange={(e) => setFilterText(e.target.value)}/>
+                </label>
+              </div>
 
               <div className="min-w-2/3 max-h-[50vh] overflow-y-scroll">
-                <table className=" divide-y divide-gray-200">
+                <table className="w-full divide-y divide-gray-200">
                     <thead>
                         <tr>
                             <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase">Class Name</th>

@@ -213,7 +213,7 @@ export default function Class() {
     const getReport = (classStudents) => {
         const doc = new jsPDF();
         const tableColumn = ["Name", "Status"];
-        
+
         const tableRows = classStudents.map((c) => [
             c.student_name,
             attendance[c.student_id] ? "Present" : "Absent",
@@ -227,20 +227,30 @@ export default function Class() {
 
         doc.setFontSize(10);
         doc.text(`${classData.type} (${classData.date.split('T')[0]})`, 14, 22);
-
         doc.text(`Present: ${presentCount}`, 14, 30);
         doc.text(`Absent: ${absentCount}`, 50, 30);
 
-        // Table with footer on each page
         autoTable(doc, {
             head: [tableColumn],
             body: tableRows,
             styles: { fontSize: 10 },
             theme: "striped",
-            headStyles: { fillColor: [52, 73, 94] },
+            headStyles: { fillColor: [52, 73, 94], textColor: 255 },
             margin: { top: 35 },
+
+            didParseCell: function (data) {
+                if (data.section === 'body') {
+                    const status = data.row.raw[1]; // 2nd column = "Status"
+
+                    if (status === "Present") {
+                        data.cell.styles.fillColor = [235, 255, 240]; // light green
+                    } else if (status === "Absent") {
+                        data.cell.styles.fillColor = [255, 230, 230]; // light red
+                    }
+                }
+            },
+
             didDrawPage: (data) => {
-                // Add footer
                 const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
                 doc.setFontSize(8);
                 doc.text(
@@ -248,7 +258,6 @@ export default function Class() {
                     data.settings.margin.left, 
                     pageHeight - 10
                 );
-
                 doc.text(
                     "ZYNEX LMS | lms.zynex.info", 
                     doc.internal.pageSize.getWidth() - data.settings.margin.right, 
@@ -260,6 +269,7 @@ export default function Class() {
 
         doc.save(`Attendance - ${classData.type} (${classData.date.split('T')[0]}).pdf`);
     };
+
 
 
 

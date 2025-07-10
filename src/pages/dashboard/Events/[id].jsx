@@ -207,8 +207,10 @@ export default function EventPage() {
         doc.setFontSize(10);
         doc.text(`Event Date: ${event?.date?.split("T")[0]} - Deadline: ${event?.deadline?.split("T")[0]}`, 14, 25);
 
-        doc.setFontSize(16);
-        doc.text(`${event?.title}`, 14, 35);
+        doc.setFontSize(10);
+        doc.text(`1st Place - ${topThree?.[0].student_name}  ${topThree?.[0].score}%`, 14, 35);
+        doc.text(`2nd Place - ${topThree?.[1].student_name}  ${topThree?.[1].score}%`, 14, 40);
+        doc.text(`3rd Place - ${topThree?.[2].student_name}  ${topThree?.[2].score}%`, 14, 45);
 
         autoTable(doc, {
             head: [tableColumn],
@@ -216,7 +218,7 @@ export default function EventPage() {
             styles: { fontSize: 10 },
             theme: "striped",
             headStyles: { fillColor: [52, 73, 94] },
-            margin: { top: 35 },
+            margin: { top: 55 },
             didDrawPage: (data) => {
                 // Add footer
                 const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
@@ -449,7 +451,7 @@ export default function EventPage() {
                                 </tr>
                             ) : (
                                 topThree.map((student, index) => (
-                                    <tr key={index} onClick={() => router.push(`/dashboard/Students/${student.student_id}`)} className='hover:bg-green-200 cursor-pointer duration-300 py-3'>
+                                    <tr key={index} onClick={() => {router.push(`/dashboard/Students/${student.student_id}`); setLoading(true)}} className='hover:bg-green-200 cursor-pointer duration-300 py-3'>
                                         <td className='text-gray-700 flex items-center gap-2 text-center justify-center px-3 py-2'>
                                             {index === 0 ? <FaCrown className='text-yellow-500' /> : index === 1 ? <PiMedalFill className='text-slate-500' /> : <FaMedal className='text-orange-500' />}
                                             {index + 1}

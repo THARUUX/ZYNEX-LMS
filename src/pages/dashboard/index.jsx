@@ -16,6 +16,9 @@ import { RiFileList2Fill } from 'react-icons/ri';
 import { FaUsers } from 'react-icons/fa';
 import { MdPending } from 'react-icons/md';
 import { Router, useRouter } from 'next/router';
+import { set } from 'date-fns';
+import { FaCrow, FaCrown, FaMedal } from 'react-icons/fa6';
+import { PiMedalFill, PiRanking } from 'react-icons/pi';
 
 
 export default function index({user}) {
@@ -26,6 +29,10 @@ export default function index({user}) {
   const [selectedClassType, setSelectedClassType] = useState('');
   const [students, setStudents] = useState('');
   const [classTypes, setClassTypes] = useState([]);
+  const [latestEvent, setLatestEvent] = useState(null);
+  const [filterText, setFilterText] = useState('');
+  const [topThree, setTopThree] = useState([]);
+  const [scores, setScores] = useState([]);
 
   const router = useRouter();
 
@@ -35,7 +42,7 @@ export default function index({user}) {
       const res = await fetch('/api/classes');
       const data = await res.json();
       setClasses(data);
-      console.log(data);
+      //console.log(data);
     } catch (err) {
       toast.error('Error fetching class data', { position: 'top-center' });
     } finally {
@@ -69,10 +76,47 @@ export default function index({user}) {
     }
   };
 
+  const fetchPlaces = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/events');
+      const data = await res.json();
+      console.log(data);
+      const latestEvent = data[data.length - 1];
+      if (latestEvent) {
+        setLatestEvent(latestEvent.title);
+        try {
+            const res = await fetch(`/api/score?type=event&typeID=${latestEvent.id}`, { method: 'GET' }); // ✅ Added await
+    
+            if (res.ok) {
+                const data = await res.json();
+                console.log('Scores' , data);
+                setScores(data);
+                const sorted = [...data].sort((a, b) => b.score - a.score);
+                const top3 = sorted.slice(0, 3); 
+                setTopThree(top3);
+            } else {
+                toast.error("Error fetching scores from database", { position: "top-center" });
+            }
+        } catch (error) {
+            console.error("Error fetching scores:", error);
+            toast.error("Error fetching scores", { position: "top-center" });
+        } finally {
+            setLoading(false);
+        }
+      }
+    } catch (err) {
+      toast.error('Error fetching events data', { position: 'top-center' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchClasses();
     fetchStudents();
     fetchClassTypes();
+    fetchPlaces();
   }, []);
 
   const formatDate = (dateString) => {
@@ -221,6 +265,36 @@ export default function index({user}) {
           <div onClick={() => router.push('/dashboard/Classes')} className="w-full sm:w-52 flex bg-red-100 text-slate-800 flex-col justify-center gap-5 sm:aspect-square rounded-lg items-center py-10 px-5 shadow-lg cursor-pointer">
             <div className='text-5xl w-full text-center'>{classes.length > 0 ? classes.filter((cls) => cls.status === 'false').length : "0"}</div>
             <div className='text-center font-bold flex gap-3'><MdPending className='text-2xl'/>Pending Classes</div>
+          </div>
+          <div className='w-full sm:w-2/5 bg-yellow-50 flex justify-center items-start p-10 rounded-lg shadow-lg flex-col gap-5'>
+            <div className="w-full text-center text-xl flex gap-2 justify-center items-center font-bold"><PiRanking className='text-2xl'/> TOP 3 <span className='font-medium text-sm'>{latestEvent}</span></div>
+            <table className='w-full'>
+                <thead>
+                    <tr>
+                        <th className='text-lg text-gray-700 py-2'>Rank</th>
+                        <th className='text-lg text-gray-700 py-2'>Name</th>
+                        <th className='text-lg text-gray-700 py-2'>Score</th>
+                    </tr>
+                </thead>
+                <tbody className=''>
+                    {topThree.length === 0 ? (
+                        <tr>
+                            <td className='text-center text-gray-500'>No scores available</td>
+                        </tr>
+                    ) : (
+                        topThree.map((student, index) => (
+                            <tr key={index} onClick={() => {router.push(`/dashboard/Students/${student.student_id}`); setLoading(true)}} className='hover:bg-green-200 cursor-pointer duration-300 py-3'>
+                                <td className='text-gray-700 flex items-center gap-2 text-center justify-center px-3 py-2'>
+                                    {index === 0 ? <FaCrown className='text-yellow-500' /> : index === 1 ? <PiMedalFill className='text-slate-500' /> : <FaMedal className='text-orange-500' />}
+                                    {index + 1}
+                                </td>
+                                <td className='text-gray-700 px-3 py-2'>{student.student_name || '-'}</td>
+                                <td className='text-gray-700 text-center py-2'>{student.score || '-'}%</td>
+                            </tr>
+                        ))
+                    )}
+                </tbody>
+            </table>
           </div>
         </div>
       </div>

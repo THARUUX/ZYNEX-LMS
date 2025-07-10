@@ -34,6 +34,8 @@ export default function Student() {
 
   const [stats , setStats] = useState([]);
 
+  const [attendanceReportData, setAttendanceReportData] = useState([]);
+
   const fetchStudent = async () => {
     setLoading(true);
     try {
@@ -70,7 +72,9 @@ export default function Student() {
       setFilteredScores(data);
       
     } catch (err) {
-      console.error("Error fetching scores:", err);
+      toast.error(err.message || 'An error occurred while fetching scores', {
+        position: "top-center"
+      });
     } finally {
       setLoading(false);
     }
@@ -137,56 +141,78 @@ export default function Student() {
   }, [id]);
 
   const fetchAttendance = async (id) => {
-    const res = await fetch(`/api/classes`);
-    const data = await res.json();
-
-    const attendance = [];
-    for (const cls of data) {
-      const date = cls.date;
-      if (!cls.attendance) continue;
-
-      try {
-        const parsed = JSON.parse(cls.attendance);
-        const entry = parsed.students.find((s) => String(s.student_id) === String(id));
-        if (entry) {
-          attendance.push({
-            student_id: entry.student_id,
-            name: entry.name,
-            status: entry.status,
-            date,
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/classes`);
+      const data = await res.json();
+      const attendance = [];
+      for (const cls of data) {
+        const date = cls.date;
+        if (!cls.attendance) continue;
+  
+        try {
+          const parsed = JSON.parse(cls.attendance);
+          const entry = parsed.students.find((s) => String(s.student_id) === String(id));
+          if (entry) {
+            attendance.push({
+              student_id: entry.student_id,
+              name: entry.name,
+              status: entry.status,
+              date,
+            });
+          }
+        } catch (err) {
+          toast.error("Error parsing attendance data: " + err.message, {
+            position: "top-center"
           });
         }
-      } catch (err) {
-        toast.error("Error parsing attendance data: " + err.message, {
-          position: "top-center"
-        });
       }
+      setAttendanceData(attendance);
+      setPieData(getPieChartData(attendance, startDate, endDate));
+      setAttendanceReportData(getAttendanceReportData(attendance, startDate, endDate));
+    } catch (error) {
+      toast.error("Error fetching attendance data: " + error.message, {
+        position: "top-center"
+      });
+    } finally {
+      setLoading(false);
     }
-    setAttendanceData(attendance);
-    setPieData(getPieChartData(attendance, startDate, endDate));
+
   };
 
   const handleFilter = () => {
     setPieData(getPieChartData(attendanceData, startDate, endDate));
+    setAttendanceReportData(getAttendanceReportData(attendanceData, startDate, endDate));
   };
 
   const getPieChartData = (attendance, startDate, endDate) => {
-  const from = new Date(startDate);
-  const to = new Date(endDate);
+    const from = new Date(startDate);
+    const to = new Date(endDate);
 
-  const filtered = attendance.filter((item) => {
-    const d = new Date(item.date);
-    return d >= from && d <= to;
-  });
+    const filtered = attendance.filter((item) => {
+      const d = new Date(item.date);
+      return d >= from && d <= to;
+    });
 
-  const present = filtered.filter((a) => a.status).length;
-  const absent = filtered.length - present;
+    const present = filtered.filter((a) => a.status).length;
+    const absent = filtered.length - present;
 
-  return [
-    { name: "Present", value: present },
-    { name: "Absent", value: absent },
-  ];
-};
+    return [
+      { name: "Present", value: present },
+      { name: "Absent", value: absent },
+    ];
+  };
+
+  const getAttendanceReportData = (attendanceData, startDate, endDate) => {
+    const from = new Date(startDate);
+    const to = new Date(endDate);
+    const filtered = attendanceData.filter((item) => {
+      const d = new Date(item.date);
+      return d >= from && d <= to;
+    });
+    const report = {};
+    console.log("Filtered Attendance Data:", filtered);
+  }
 
 
 
@@ -198,7 +224,7 @@ export default function Student() {
 
 
   function getStudentStats(studentId, allScores) {
-    console.log("All Scores:", allScores);
+    //console.log("All Scores:", allScores);
     const studentScores = allScores.filter(s => s.student_id == studentId);
 
     if (studentScores.length === 0) {
@@ -270,7 +296,7 @@ export default function Student() {
     <Layout isLoading={isLoading} title="Student Details">
       <div className="px-5 sm:px-10 py-5">
         <div className="w-full py-3 flex justify-between">
-          <div className='tracking-wider text-3xl text-slate-900 flex items-end gap-3'>
+          <div className='text-xl sm:text-3xl text-slate-900 flex items-center  gap-3'>
             Student: 
             <span className='text-md sm:text-2l '>
                {studentData.name? studentData.name : attendanceData.length > 0 ? attendanceData[0].name  : <div class='text-sm text-red-500'>Student Removed</div>}
@@ -280,7 +306,7 @@ export default function Student() {
 
         <div className='flex flex-col sm:flex-row gap-5  flex-wrap  mt-5'>
           <div className=' bg-white text-slate-800 p-5 rounded-lg w-full sm:w-fit shadow-lg cursor-pointer duration-300 hover:scale-105'>
-            <div className='text-xl border-b pb-5 font-bold px-10'>Assigned Classes</div>
+            <div className='text-lg px-3 sm:text-xl border-b pb-5 font-bold sm:px-10'>Assigned Classes</div>
             <div className=' flex flex-col gap-2 mt-3'>
               {classNames.length === 0 ? (
                 <div>No Classes Assigned</div> 

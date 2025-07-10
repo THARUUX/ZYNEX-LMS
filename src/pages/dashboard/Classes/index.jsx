@@ -133,14 +133,14 @@ export default function index() {
 
   return (
     <Layout isLoading={isLoading}>
-      <div className="p-5">
-        <div className="w-full tracking-wider sm:px-5 py-3 text-xl sm:text-3xl text-slate-900">
+      <div className="p-5 flex flex-col gap-5">
+        <div className="w-full text-xl sm:text-3xl text-slate-900">
           Classes Management
         </div>
-        <div className="w-full flex flex-col py-5">
-          <div className="sm:text-xl sm:pl-5 mb-2">Schedule a class</div>
+        <div className="w-full flex flex-col gap-2">
+          <div className="sm:text-xl">Schedule a class</div>
           {message && <p className="text-green-600 pl-5">{message}</p>}
-          <form onSubmit={handleSubmit} className="flex sm:flex-col w-full sm:px-5 sm:w-1/2 flex-wrap gap-4 justify-between sm:justify-normal">
+          <form onSubmit={handleSubmit} className="flex w-full flex-wrap gap-4 justify-between">
             <div className="flex w-full gap-2">
               <div className="grow-1 sm:max-w-sm">
                 <label htmlFor="type">Class type</label> 
@@ -200,11 +200,11 @@ export default function index() {
           </form>
         </div>
 
-        <div className="sm:p-5 mt-5">
-          <div className="flex flex-col sm:flex-row justify-between items-center">
-            <h1 className="text-xl text-slate-900 w-full sm:w-auto">Classes List</h1>          
-            <div className="my-4">
-              <div className="flex gap-4 sm:my-4">
+        <div className="mt-5 sm:mt-0 gap-3 sm:gap-0 flex flex-col justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 w-full">
+            <h1 className="text-xl text-slate-900 w-full ">Classes List</h1>          
+            <div className="sm:w-2/3 w-full flex justify-end items-center">
+              <div className="flex gap-4 w-full">
                 {/* Date Filter */}
                 <div className="flex flex-col relative  text-sm">
                   <input
@@ -215,14 +215,14 @@ export default function index() {
                   />
                 </div>
                 {/* Type Filter */}
-                <label className="input bg-slate-100">
+                <label className="input bg-slate-100 grow">
                   <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g strokeLinejoin="round" strokeLinecap="round" strokeWidth="2.5" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></g></svg>
                   <input type="search" className="grow" placeholder="Search" value={searchType} onChange={(e) => setSearchType(e.target.value)} />
                 </label>
               </div>
             </div>
           </div>
-          <div className="overflow-scroll">
+          <div className="overflow-scroll w-full">
             <div className="hidden sm:flex w-full">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
@@ -241,7 +241,7 @@ export default function index() {
                     .map((c) => (
                       <tr
                         key={c.id}
-                        onClick={() => router.push(`/dashboard/Classes/${c.id}`)}
+                        onClick={() => {router.push(`/dashboard/Classes/${c.id}`); setLoading(true);}}
                         className={
                           c.status === "done"
                             ? 'bg-green-200 duration-300 hover:bg-green-50 cursor-pointer'

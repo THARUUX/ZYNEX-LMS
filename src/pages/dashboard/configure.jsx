@@ -108,13 +108,13 @@ export default function Configure() {
         allowFullScreen
         style={{ border: "none" }} 
       />*/}
-      <div className='p-10'>
-        <div className='sm:text-3xl'>Configure</div>
+      <div className='p-5'>
+        <div className='sm:text-3xl text-xl pb-5 w-full'>Configure</div>
         <div className='sm:py-10'>
-          <div className='sm:text-2xl'>Users</div>
-          <div className='py-5'>
+          <div className='sm:text-xl'>Users</div>
+          <div className='py-5 w-full'>
             <form onSubmit={handleSubmit} className='flex flex-col sm:flex-row gap-5 justify-center items-center'>
-              <div className='grow'>
+              <div className='grow w-full'>
                 <input
                   className='outline-none w-full border-b-2 border-gray-300 focus:border-slate-500 px-2 py-1'
                   type="text"
@@ -125,7 +125,7 @@ export default function Configure() {
                   required
                 />
               </div>
-              <div className='grow'>
+              <div className='grow w-full'>
                 <input
                   className='outline-none w-full border-b-2 border-gray-300 focus:border-slate-500 px-2 py-1'
                   type="email"
@@ -136,7 +136,7 @@ export default function Configure() {
                   required
                 />
               </div>
-              <div className='grow'>
+              <div className='grow w-full'>
                 <input
                   className='outline-none w-full border-b-2 border-gray-300 focus:border-slate-500 px-2 py-1'
                   type="password"
@@ -147,7 +147,7 @@ export default function Configure() {
                   required
                 />
               </div>
-              <div className='grow'>
+              <div className='grow w-full'>
                 <select
                   name="role"
                   value={form.role}
@@ -162,7 +162,7 @@ export default function Configure() {
               </div>
               <button
                 type="submit"
-                className='bg-slate-900 text-white px-4 py-2 rounded grow'
+                className='bg-slate-900 text-white px-4 py-2 rounded grow w-full'
               >
                 Register
               </button>
@@ -170,7 +170,7 @@ export default function Configure() {
           </div>
 
           <div className='py-10 flex flex-col gap-3'>
-            <h2 className="text-xl">Registered Users</h2>
+            <h2 className="sm:text-xl">Registered Users</h2>
               <ul className="bg-white shadow-md rounded-lg divide-y divide-gray-200">
                 {users.map((user) => (
                   <li key={user.id} className="flex justify-between items-center p-4 px-10 hover:bg-gray-50 transition-colors">
