@@ -270,10 +270,10 @@ export default function Student() {
     <Layout isLoading={isLoading} title="Student Details">
       <div className="px-5 sm:px-10 py-5">
         <div className="w-full py-3 flex justify-between">
-          <div className='tracking-wider text-3xl text-slate-900'>
+          <div className='tracking-wider text-3xl text-slate-900 flex items-end gap-3'>
             Student: 
-            <span className='text-md sm:text-2l'>
-               {studentData.name}
+            <span className='text-md sm:text-2l '>
+               {studentData.name? studentData.name : attendanceData.length > 0 ? attendanceData[0].name  : <div class='text-sm text-red-500'>Student Removed</div>}
             </span> 
           </div>
         </div>

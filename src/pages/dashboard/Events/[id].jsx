@@ -11,6 +11,7 @@ import autoTable from "jspdf-autotable";
 import { FaCrown } from "react-icons/fa6";
 import { FaMedal } from "react-icons/fa";
 import { PiMedalFill } from "react-icons/pi";
+import { PiRanking } from "react-icons/pi";
 
 export default function EventPage() {
     const router = useRouter();
@@ -205,6 +206,9 @@ export default function EventPage() {
 
         doc.setFontSize(10);
         doc.text(`Event Date: ${event?.date?.split("T")[0]} - Deadline: ${event?.deadline?.split("T")[0]}`, 14, 25);
+
+        doc.setFontSize(16);
+        doc.text(`${event?.title}`, 14, 35);
 
         autoTable(doc, {
             head: [tableColumn],
@@ -427,14 +431,36 @@ export default function EventPage() {
                     </div>
                 </div>
 
-                <div className='flex p-5'>
+                <div className='flex pt-5 sm:p-5'>
                     <div className='w-full sm:w-2/5 bg-green-100 flex justify-center items-start p-10 rounded-lg shadow-lg flex-col gap-5'>
-                    <table>
-                        
+                    <div className="w-full text-center text-xl flex gap-2 justify-center items-center font-bold"><PiRanking className='text-2xl'/> TOP 3</div>
+                    <table className='w-full'>
+                        <thead>
+                            <tr>
+                                <th className='text-lg text-gray-700 py-2'>Rank</th>
+                                <th className='text-lg text-gray-700 py-2'>Name</th>
+                                <th className='text-lg text-gray-700 py-2'>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody className=''>
+                            {topThree.length === 0 ? (
+                                <tr>
+                                    <td className='text-center text-gray-500'>No scores available</td>
+                                </tr>
+                            ) : (
+                                topThree.map((student, index) => (
+                                    <tr key={index} onClick={() => router.push(`/dashboard/Students/${student.student_id}`)} className='hover:bg-green-200 cursor-pointer duration-300 py-3'>
+                                        <td className='text-gray-700 flex items-center gap-2 text-center justify-center px-3 py-2'>
+                                            {index === 0 ? <FaCrown className='text-yellow-500' /> : index === 1 ? <PiMedalFill className='text-slate-500' /> : <FaMedal className='text-orange-500' />}
+                                            {index + 1}
+                                        </td>
+                                        <td className='text-gray-700 px-3 py-2'>{student.student_name || '-'}</td>
+                                        <td className='text-gray-700 text-center py-2'>{student.score || '-'}%</td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
                     </table>
-                        <div className='flex gap-3 text-xl items-center text-yellow-600'><FaCrown className='text-3xl text-yellow-500' /> <div>1st</div> {topThree?.[0]?.student_name || '-'} <div>{topThree?.[0]?.score || '-'}%</div></div>
-                        <div className='flex gap-3 text-lg items-center text-gray-500'><FaMedal className='text-2xl text-gray-500'/> <div>2nd</div> {topThree?.[1]?.student_name || '-'} <div>{topThree?.[1]?.score || '-'}%</div></div>
-                        <div className='flex gap-3 items-center text-amber-700'><PiMedalFill className='text-2xl text-amber-700'/> <div>3rd</div> {topThree?.[2]?.student_name || '-'} <div>{topThree?.[2]?.score || '-'}%</div></div>
                     </div>
                 </div>
             </div>
