@@ -65,6 +65,15 @@ export default async function handler(req, res) {
             );
 
             return res.status(200).json({ message: "Student(s) added successfully" });
+        } else if (req.method === "DELETE") {
+            // Handling DELETE method to remove the event
+            const [deleteResult] = await pool.query("DELETE FROM events WHERE id = ?", [id]);
+
+            if (deleteResult.affectedRows === 0) {
+                return res.status(404).json({ message: "Event not found" });
+            }
+
+            return res.status(200).json({ message: "Event deleted successfully" });
         }
 
         // Method not allowed for other requests

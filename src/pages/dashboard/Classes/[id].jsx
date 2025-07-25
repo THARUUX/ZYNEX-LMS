@@ -279,7 +279,7 @@ export default function Class() {
         return (
             <Layout>
                 <div className="p-5">
-                    <div className="w-full tracking-wider px-5 py-3 text-3xl text-slate-900">
+                    <div className="w-full  px-5 py-3 text-3xl text-slate-900">
                         Class not found or failed to fetch data.
                     </div>
                 </div>

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { toast } from "react-toastify";
 import { useRouter } from "next/router";
+import { MdDelete } from "react-icons/md";
+import { Dialog } from "../../../../components/Dialog";
 
 export default function Events() {
     const router = useRouter();
@@ -95,10 +97,68 @@ export default function Events() {
         setLoading(false);
       }
     };
+
+    const [modal, setModal] = useState({ header: "", cont: "", func: null });
+
+    const deleteEvent = (id) => {
+      if (!id) {
+        toast.error('Error!' , {position: "top-center"});
+        return;
+      }
+      setModal({
+        header: "Warning",
+        cont: "Are you sure you want to delete this event?",
+        func: () => handleDelete(id),
+      });
+      document.getElementById("my_modal_5").showModal();
+    };
+
+    const handleDelete = async (id) => {
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/events/${id}`, {
+                method: "DELETE",
+            });
+            if (res.ok) { 
+              toast.success("Event deleted successfully!", { position: "top-center" });
+              setEvents(events.filter(event => event.id !== id));
+            } else {
+              toast.error("Failed to delete event", { position: "top-center" });
+            }
+        } catch (error) {
+            console.error("Error deleting event:", error);
+            toast.error("Error deleting event", { position: "top-center" });
+        } finally {
+            setLoading(false);
+        }
+    };
     
 
     return (
         <Layout isLoading={isLoading}>
+          <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
+            <div className="modal-box bg-white">
+              <h3 className="font-bold text-lg">{modal.header}</h3>
+              <p className="py-4">{modal.cont}</p>
+              <div className="modal-action">
+                <form className="flex gap-5" method="dialog">
+                  <button onClick={() => {document.getElementById("my_modal_5").close();}} className="btn border-0">No</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      modal.func(); // Trigger the function passed in the modal state
+                      document.getElementById("my_modal_5").close(); // Close the modal
+                    }}
+                    className="bg-red-600 btn border-0 text-white hover:bg-red-700"
+                  >
+                    Yes
+                  </button>
+                </form>
+              </div>
+            </div>
+          </dialog>
+
+
           <div className="p-5">
             <div className="w-full tracking-wider py-3 text-xl sm:text-3xl text-slate-900">
               Event Management
@@ -203,7 +263,7 @@ export default function Events() {
                             <td className="text-xs sm:text-sm px-6 py-4">{c.date.split("T")[0]}</td>
                             <td className="text-xs sm:text-sm px-6 py-4">{c.deadline.split("T")[0]}</td>
                             <td className="text-xs sm:text-sm px-6 py-4">{c.status === "done" ? "Completed" : "Pending"}</td>
-                            <td className="text-xs sm:text-sm px-6 py-4">
+                            <td className="text-xs sm:text-sm px-6 py-4 flex gap-5 items-center">
                               <button
                                 className="cursor-pointer"
                                 type="button"
@@ -213,6 +273,15 @@ export default function Events() {
                                 }}
                               >
                                 {c.status === "done" ? "✅" : "❌"}
+                              </button>
+                              <button>
+                                <MdDelete
+                                  className="text-red-500 cursor-pointer text-xl"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    deleteEvent(c.id);
+                                  }}
+                                />
                               </button>
                             </td>
                           </tr>

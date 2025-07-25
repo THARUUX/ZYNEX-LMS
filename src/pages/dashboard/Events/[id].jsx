@@ -304,7 +304,7 @@ export default function EventPage() {
         });
 
         doc.save(`${event?.title} - participation report.pdf`);
-        };
+    };
 
 
     const [scoreStudentsIds, setScoreStudentsIds] = useState([]);
@@ -324,7 +324,6 @@ export default function EventPage() {
     }, [scores]);
 
 
-    //Participat Report Feature
     const [searchTermParticipate, setSearchTermParticipate] = useState('');
     const [selectedBatch, setSelectedBatch] = useState('All Batches');
     const [participationFilter, setParticipationFilter] = useState('All Statuses');
@@ -557,7 +556,7 @@ export default function EventPage() {
                     </table>
                     </div>
                 </div>
-                <div className="sm:p-5">
+                <div className="sm:p-5 mt-10 sm:mt-0">
                     <div className="w-full p-5 flex flex-col shadow-lg rounded">
                         <div className="text-xl">Student participating report</div>
 
@@ -649,7 +648,7 @@ export default function EventPage() {
                         </table>
                         </div>
                     </div>
-                    </div>
+                </div>
 
             </div>
         </Layout>
