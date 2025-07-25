@@ -50,7 +50,7 @@ export default function EventPage() {
                 setEvent(data);
                 setFormData({
                     id: data.id,
-                    name: data.title,  // Adjust according to API response
+                    name: data.title,  
                     starting_date: data.date.split('T')[0],
                     deadline: data.deadline.split('T')[0]
                 });
@@ -87,7 +87,7 @@ export default function EventPage() {
 
             if (res.ok) {
                 toast.success("Event updated successfully!", { position: "top-center" });
-                fetchEvent(); // Refresh data after update
+                fetchEvent();
             } else {
                 toast.error("Failed to update event", { position: "top-center" });
             }
@@ -157,7 +157,7 @@ export default function EventPage() {
                 toast.success("Student added successfully!", { position: "top-center" });
                 fetchScores();
                 setEngageStudentData({ id: "", name: "", score: "", typeId: id , date: "", type: "event" });
-                setSearchTerm(""); // Clear search input
+                setSearchTerm("");
             } else {
                 toast.error("Failed to add student", { position: "top-center" });
             }
@@ -220,7 +220,6 @@ export default function EventPage() {
             headStyles: { fillColor: [52, 73, 94] },
             margin: { top: 55 },
             didDrawPage: (data) => {
-                // Add footer
                 const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
                 doc.setFontSize(8);
                 doc.text(
@@ -245,14 +244,14 @@ export default function EventPage() {
     if (scores && scores.length > 0) {
         const transedData = scores.map((item) => ({
         name: item.student_name,
-        Marks: Number(item.score), // Score shown in the bar chart
+        Marks: Number(item.score),
         uv: 0,
         amt: 0,
         }));
 
         setReportData(transedData);
     }
-    }, [scores]); // ✅ Run only when `scores` changes
+    }, [scores]); 
 
     
 
@@ -464,6 +463,9 @@ export default function EventPage() {
                         </tbody>
                     </table>
                     </div>
+                </div>
+                <div className='w-full'>
+                    <div>Student participating report to the event</div>
                 </div>
             </div>
         </Layout>
