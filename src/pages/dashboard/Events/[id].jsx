@@ -240,6 +240,75 @@ export default function EventPage() {
         doc.save(`${event?.title}-scores.pdf`);
     };
 
+
+    const downloadParticipantsPDF = (_rdata) => {
+        const doc = new jsPDF();
+        const tableColumn = ["Name", "Batch" , "Participated"];
+        
+        const tableRows = _rdata.map((c) => {
+            const participated = scoreStudentsIds.includes(Number(c.id));
+            return [c.name, c.batch , participated ? 'Yes' : 'No'];
+        });
+
+        doc.setFontSize(16);
+        doc.text(`Participation report of ${event?.title}`, 14, 15);
+
+        doc.setFontSize(10);
+        doc.text(
+            `Event Date: ${event?.date?.split("T")[0]} | Deadline: ${event?.deadline?.split("T")[0]}`,
+            14,
+            25
+        );
+
+        doc.setFontSize(12);
+        doc.text(
+            `${participationFilter === "All Statuses" ? 'All participants' : `${participationFilter} students`} ${
+            selectedBatch === "All Batches" ? "" : `of ${selectedBatch} batch`
+            }`,
+            14,
+            35
+        );
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            styles: { fontSize: 10 },
+            theme: "striped",
+            headStyles: { fillColor: [52, 73, 94] },
+            margin: { top: 38 },
+            willDrawCell: function (data) {
+                const rowIndex = data.row.index;
+                const participated = tableRows[rowIndex]?.[tableRows[rowIndex].length - 1] === "Yes";
+
+                if (data.section === 'body' && !participated) {
+                doc.setFillColor(255, 230, 230); 
+                doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
+                }
+            },
+            didDrawPage: (data) => {
+            const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+            doc.setFontSize(8);
+            doc.text(
+                `Page ${doc.internal.getNumberOfPages()}`,
+                data.settings.margin.left,
+                pageHeight - 10
+            );
+
+            doc.text(
+                "ZYNEX LMS | lms.zynex.info",
+                doc.internal.pageSize.getWidth() - data.settings.margin.right,
+                pageHeight - 10,
+                { align: "right" }
+            );
+            }
+        });
+
+        doc.save(`${event?.title} - participation report.pdf`);
+        };
+
+
+    const [scoreStudentsIds, setScoreStudentsIds] = useState([]);
+
     useEffect(() => {
     if (scores && scores.length > 0) {
         const transedData = scores.map((item) => ({
@@ -250,8 +319,32 @@ export default function EventPage() {
         }));
 
         setReportData(transedData);
+        setScoreStudentsIds(scores.map(score => score.student_id));
     }
-    }, [scores]); 
+    }, [scores]);
+
+
+    //Participat Report Feature
+    const [searchTermParticipate, setSearchTermParticipate] = useState('');
+    const [selectedBatch, setSelectedBatch] = useState('All Batches');
+    const [participationFilter, setParticipationFilter] = useState('All Statuses');
+
+    const allBatches = ['All Batches', ...new Set(students.map(student => student.batch))];
+
+    const filteredStudentsParticipate = students.filter((student) => {
+        const nameMatch = student.name.toLowerCase().includes(searchTermParticipate.toLowerCase());
+
+        const batchMatch = selectedBatch === 'All Batches' || String(student.batch) === String(selectedBatch);
+
+        const participated = scoreStudentsIds.includes(Number(student.id));
+
+        const participationMatch =
+            participationFilter === 'All Statuses' ||
+            (participationFilter === 'Participated' && participated) ||
+            (participationFilter === 'Not Participated' && !participated);
+
+        return nameMatch && batchMatch && participationMatch;
+    });
 
     
 
@@ -341,7 +434,7 @@ export default function EventPage() {
                                                     onClick={() => {
                                                         setSearchTerm(student.name);
                                                         setEngageStudentData({...engageStudentData, name: student.name, id: student.id });
-                                                        setShowDropdown(false); // ✅ Close dropdown when selecting
+                                                        setShowDropdown(false); 
                                                     }}
                                                 >
                                                     {student.name}
@@ -464,9 +557,100 @@ export default function EventPage() {
                     </table>
                     </div>
                 </div>
-                <div className='w-full'>
-                    <div>Student participating report to the event</div>
-                </div>
+                <div className="sm:p-5">
+                    <div className="w-full p-5 flex flex-col shadow-lg rounded">
+                        <div className="text-xl">Student participating report</div>
+
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-4 ">
+                            <div className='w-full sm:w-1/2 flex items-end'>
+                                <input
+                                    type="text"
+                                    placeholder="Search by name"
+                                    value={searchTermParticipate}
+                                    onChange={(e) => setSearchTermParticipate(e.target.value)}
+                                    className="px-3 py-2 rounded shadow text-sm w-full" 
+                                />
+                            </div>
+
+                            <div className='flex flex-col grow'>
+                                <select
+                                    value={selectedBatch}
+                                    onChange={(e) => setSelectedBatch(e.target.value)}
+                                    className="px-3 py-2 rounded shadow text-sm"
+                                >
+                                    {allBatches.map((batch, index) => (
+                                    <option key={index} value={String(batch)}>{batch}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className='flex flex-col grow'>
+                                <select
+                                    value={participationFilter}
+                                    onChange={(e) => setParticipationFilter(e.target.value)}
+                                    className="px-3 py-2 rounded shadow text-sm"
+                                >
+                                    <option value="All">All Statuses</option>
+                                    <option value="Participated">Participated</option>
+                                    <option value="Not Participated">Not Participated</option>
+                                </select>
+                            </div>
+
+
+
+                            <div  onClick={() => {
+                                if (filteredStudentsParticipate && filteredStudentsParticipate.length > 0) {
+                                downloadParticipantsPDF(filteredStudentsParticipate);
+                                } else {
+                                    alert("No data to download.");
+                                }}
+                                } className='py-2 px-3 bg-slate-200 flex gap-5 cursor-pointer justify-center items-center grow rounded'>
+                                    Download PDF
+                                <FaDownload />
+                            </div>
+                        </div>
+
+                        <div className="max-h-[400px] overflow-y-auto">
+                        <table className="min-w-full divide-y divide-gray-200 table-fixed">
+                            <thead className="bg-gray-100 sticky top-0 z-10">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-1/2">Student Name</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-1/2">Batch</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase w-1/2">Participated</th>
+                            </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-200">
+                            {filteredStudentsParticipate.length > 0 ? (
+                                filteredStudentsParticipate.map((student, index) => {
+                                const participated = scoreStudentsIds.includes(Number(student.id));
+                                return (
+                                    <tr
+                                    key={index}
+                                    onClick={() => {
+                                        router.push(`/dashboard/Students/${student.id}`);
+                                        setLoading(true);
+                                    }}
+                                    className="hover:bg-green-50 cursor-pointer"
+                                    >
+                                    <td className="text-xs sm:text-sm px-6 py-4">{student.name}</td>
+                                    <td className="text-xs sm:text-sm px-6 py-4">{student.batch}</td>
+                                    <td className={participated ? 'text-green-600 text-xs sm:text-sm px-6 py-4 flex justify-center' : 'text-red-500 text-xs sm:text-sm px-6 py-4 flex justify-center'}>
+                                        {participated ? '✅' : '❌'}
+                                    </td>
+                                    </tr>
+                                );
+                                })
+                            ) : (
+                                <tr>
+                                <td colSpan={2} className="text-center text-gray-500 py-3">No students found</td>
+                                </tr>
+                            )}
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+
             </div>
         </Layout>
     );
